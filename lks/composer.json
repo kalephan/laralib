@@ -1,0 +1,14 @@
+{
+	"name": "kalephan/lks",
+	"require": {
+		"laravel/framework": "5.0.*"
+	},
+	"autoload": {
+		"files": [
+			"vendor/kalephan/lks/src/helpers.php"
+		],
+		"psr-4": {
+			"Kalephan\\LKS\\": "vendor/kalephan/lks/src/"
+		}
+	}
+}
