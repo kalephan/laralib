@@ -3,9 +3,11 @@ namespace Kalephan\Ec\Order;
 
 use Kalephan\LKS\EntityAbstract;
 
-class OrderEntity extends EntityAbstract {
+class OrderEntity extends EntityAbstract
+{
 
-    function __config() {
+    function __config()
+    {
         return array(
             '#id' => 'ec_order_id',
             '#name' => 'ec_order',
@@ -20,93 +22,94 @@ class OrderEntity extends EntityAbstract {
                 'pay_gender' => array(
                     '#name' => 'payinfo_gender	',
                     '#title' => 'giới tính',
-                    '#type' => 'checkboxes',
+                    '#type' => 'checkboxes'
                 ),
                 'pay_name' => array(
                     '#name' => 'pay_name	',
                     '#title' => 'Họ & Tên',
                     '#type' => 'text',
                     '#attributes' => array(
-                        'placeholder' => 'Họ & Tên',
-                    ),
+                        'placeholder' => 'Họ & Tên'
+                    )
                 ),
                 'pay_email' => array(
                     '#name' => 'pay_email	',
                     '#title' => 'Email',
                     '#type' => 'text',
                     '#attributes' => array(
-                        'placeholder' => 'Email',
-                    ),
+                        'placeholder' => 'Email'
+                    )
                 ),
                 'pay_phone' => array(
                     '#name' => 'pay_phone	',
                     '#title' => 'Điện Thoại',
                     '#type' => 'text',
                     '#attributes' => array(
-                        'placeholder' => 'Điện Thoại',
-                    ),
+                        'placeholder' => 'Điện Thoại'
+                    )
                 ),
                 'pay_address' => array(
                     '#name' => 'pay_address	',
                     '#title' => 'Địa Chỉ',
                     '#type' => 'text',
                     '#attributes' => array(
-                        'placeholder' => 'Địa Chỉ',
-                    ),
+                        'placeholder' => 'Địa Chỉ'
+                    )
                 ),
-
+                
                 'ship_gender' => array(
                     '#name' => 'payinfo_gender	',
                     '#title' => 'giới tính',
-                    '#type' => 'checkboxes',
+                    '#type' => 'checkboxes'
                 ),
                 'ship_name' => array(
                     '#name' => 'pay_name	',
                     '#title' => 'Họ & Tên',
                     '#type' => 'text',
                     '#attributes' => array(
-                        'placeholder' => 'Họ & Tên',
-                    ),
+                        'placeholder' => 'Họ & Tên'
+                    )
                 ),
                 'ship_email' => array(
                     '#name' => 'pay_email	',
                     '#title' => 'Email',
                     '#type' => 'text',
                     '#attributes' => array(
-                        'placeholder' => 'Email',
-                    ),
+                        'placeholder' => 'Email'
+                    )
                 ),
                 'ship_phone' => array(
                     '#name' => 'pay_phone	',
                     '#title' => 'Điện Thoại',
                     '#type' => 'text',
                     '#attributes' => array(
-                        'placeholder' => 'Điện Thoại',
-                    ),
+                        'placeholder' => 'Điện Thoại'
+                    )
                 ),
                 'ship_address' => array(
                     '#name' => 'pay_address	',
                     '#title' => 'Địa Chỉ',
                     '#type' => 'text',
                     '#attributes' => array(
-                        'placeholder' => 'Địa Chỉ',
-                    ),
+                        'placeholder' => 'Địa Chỉ'
+                    )
                 ),
                 'note' => array(
                     '#name' => 'note	',
                     '#title' => 'GHI CHÚ THÊM',
                     '#type' => 'text',
                     '#attributes' => array(
-                        'placeholder' => 'GHI CHÚ THÊM',
-                    ),
-                ),
+                        'placeholder' => 'GHI CHÚ THÊM'
+                    )
+                )
             )
         );
     }
 
-    function  orderFinalize() {
+    function orderFinalize()
+    {
         $vars = array(
-            'cart_id' => isset($_GET['cart_id']) ? intval($_GET['cart_id']) : 0,
+            'cart_id' => isset($_GET['cart_id']) ? intval($_GET['cart_id']) : 0
         );
         $lks->response->addContent(lks_render('ec_order_order_finalize', $vars));
     }

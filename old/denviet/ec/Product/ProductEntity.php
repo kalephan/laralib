@@ -3,9 +3,11 @@ namespace Kalephan\Ec\Product;
 
 use Kalephan\LKS\EntityAbstract;
 
-class ProductEntity extends EntityAbstract {
+class ProductEntity extends EntityAbstract
+{
 
-    function __config() {
+    function __config()
+    {
         return array(
             '#id' => 'id',
             '#name' => 'ec_products',
@@ -23,13 +25,13 @@ class ProductEntity extends EntityAbstract {
                     '#type' => 'text',
                     '#validate' => 'required',
                     '#attributes' => array(
-                        'data-required' => '',
-                    ),
+                        'data-required' => ''
+                    )
                 ),
                 'shor_desc' => array(
                     '#name' => 'shor_desc',
                     '#title' => lks_lang('Mô tả ngắn'),
-                    '#type' => 'textarea',
+                    '#type' => 'textarea'
                 ),
                 'price' => array(
                     '#name' => 'price',
@@ -38,8 +40,8 @@ class ProductEntity extends EntityAbstract {
                     '#validate' => 'required|numeric',
                     '#attributes' => array(
                         'data-required' => '',
-                        'data-validate' => 'price',
-                    ),
+                        'data-validate' => 'price'
+                    )
                 ),
                 'image' => array(
                     '#name' => 'image',
@@ -48,7 +50,7 @@ class ProductEntity extends EntityAbstract {
                     '#widget' => 'image',
                     '#list_hidden' => true,
                     '#validate' => 'image|mimes:jpeg,png,gif',
-                    '#empty_field_ajax_url' => 'product/%id/empty-field/image',
+                    '#empty_field_ajax_url' => 'product/%id/empty-field/image'
                 ),
                 'created_by' => array(
                     '#name' => 'created_by',
@@ -93,11 +95,11 @@ class ProductEntity extends EntityAbstract {
                     '#type' => 'radios',
                     '#options' => array(
                         1 => lks_lang('Bật'),
-                        0 => lks_lang('Tắt'),
+                        0 => lks_lang('Tắt')
                     ),
                     '#form_hidden' => 1,
-                    '#default' => 1,
-                ),
+                    '#default' => 1
+                )
             )
         );
     }

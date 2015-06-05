@@ -6,10 +6,12 @@ use Kalephan\LKS\EntityControllerTrait;
 use Kalephan\Core\Form;
 use Illuminate\Support\Facades\App;
 
-class ProfileEntity extends EntityAbstract {
+class ProfileEntity extends EntityAbstract
+{
     use EntityControllerTrait;
 
-    function __config() {
+    function __config()
+    {
         return array(
             '#id' => 'id',
             '#name' => 'profiles',
@@ -28,9 +30,9 @@ class ProfileEntity extends EntityAbstract {
                     '#options' => array(
                         '' => lks_lang('Chọn giới tính'),
                         'male' => lks_lang('Nam'),
-                        'female' => lks_lang('Nữ'),
+                        'female' => lks_lang('Nữ')
                     ),
-                    '#required' => true,
+                    '#required' => true
                 ),
                 'birthday' => array(
                     '#name' => 'birthday',
@@ -39,14 +41,25 @@ class ProfileEntity extends EntityAbstract {
                     '#validate' => 'required',
                     '#required' => true,
                     '#config' => array(
-                        'form_type' => 'select_group',
+                        'form_type' => 'select_group'
                     ),
                     '#attributes' => array(
-                        'day' => ['class' => 'date_birth', 'data-required' => ''],
-                        'month' => ['class' => 'date_birth', 'data-required' => ''],
-                        'year' => ['class' => 'birth', 'data-required' => '', 'data-pattern' => '^\d{4}$', 'placeholder' => 1985],
+                        'day' => [
+                            'class' => 'date_birth',
+                            'data-required' => ''
+                        ],
+                        'month' => [
+                            'class' => 'date_birth',
+                            'data-required' => ''
+                        ],
+                        'year' => [
+                            'class' => 'birth',
+                            'data-required' => '',
+                            'data-pattern' => '^\d{4}$',
+                            'placeholder' => 1985
+                        ]
                     ),
-                    '#error_message' => lks_lang('Ngày tháng không hợp lệ'),
+                    '#error_message' => lks_lang('Ngày tháng không hợp lệ')
                 ),
                 'address' => array(
                     '#name' => 'address',
@@ -55,12 +68,12 @@ class ProfileEntity extends EntityAbstract {
                     '#attributes' => array(
                         'placeholder' => lks_lang('123 Đại lộ Bình Dương, P.Chánh Nghĩa'),
                         'size' => 100,
-                        'data-required' => '',
+                        'data-required' => ''
                     ),
                     '#description' => lks_lang('Không bao gồm tên tỉnh thành và quận huyện trong địa chỉ.'),
                     '#required' => true,
                     '#validate' => 'required||max:100',
-                    '#error_message' => lks_lang('Trường này yêu cầu phải nhập.'),
+                    '#error_message' => lks_lang('Trường này yêu cầu phải nhập.')
                 ),
                 'created_by' => array(
                     '#name' => 'created_by',
@@ -90,56 +103,63 @@ class ProfileEntity extends EntityAbstract {
                     '#widget' => 'date_timestamp',
                     '#form_hidden' => 1,
                     '#list_hidden' => true,*/
-                ),
-            ),
+                )
+            )
         );
     }
 
-    public function showUpdate($lks, $entity_id) {
+    public function showUpdate($lks, $entity_id)
+    {
         // Check User exists
-        $user = $lks->load('\Kalephan\User\UserEntity')->loadEntity($entity_id, ['cache' => false]);
-        if (!$user) {
+        $user = $lks->load('\Kalephan\User\UserEntity')->loadEntity($entity_id, [
+            'cache' => false
+        ]);
+        if (! $user) {
             App::abort(403);
         }
-
-        $profile = $this->loadEntity($user->id, ['cache' => false]);
+        
+        $profile = $this->loadEntity($user->id, [
+            'cache' => false
+        ]);
         $form_values = array_merge(lks_object_to_array($profile), lks_object_to_array($user));
-
+        
         $lks->response->addContent(Form::build($this->structure->class . '@showUpdateForm', $form_values));
     }
 
-    public function showUpdateForm() {
+    public function showUpdateForm()
+    {
         $form = [];
-
+        
         $form['email'] = array(
             '#name' => 'email',
             '#type' => 'markup',
             '#title' => lks_lang('Email'),
-            '#disabled' => true,
+            '#disabled' => true
         );
-
+        
         $user = lks_instance_get()->load('\Kalephan\User\UserEntity');
         $user_structure = $user->getStructure();
         $form['fullname'] = $user_structure->fields['fullname'];
-
+        
         $form += $this->_showCreateForm();
-
+        
         $form['id']['#disabled'] = true;
-
+        
         $form->message = lks_lang('Hồ sơ của bạn đã được cập nhật thành công.');
-
+        
         array_unshift($form->submit, '\Kalephan\Profile\ProfileEntity@alterShowUpdateFormSubmit');
-
+        
         return $form;
     }
 
-    public function alterShowUpdateFormSubmit($form_id, &$form, &$form_values) {
+    public function alterShowUpdateFormSubmit($form_id, &$form, &$form_values)
+    {
         // Update to User
-        $user = new \stdClass;
+        $user = new \stdClass();
         $user->id = $form_values['id'];
         $user->fullname = $form_values['fullname'];
         $user->updated_at = date('Y-m-d H:i:s');
-
+        
         $user_obj = lks_instance_get()->load('\Kalephan\User\UserEntity');
         $user_obj->saveEntity($user);
     }

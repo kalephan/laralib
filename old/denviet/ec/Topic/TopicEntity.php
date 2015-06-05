@@ -6,10 +6,12 @@ use Kalephan\LKS\EntityControllerTrait;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 
-class TopicEntity extends EntityAbstract {
+class TopicEntity extends EntityAbstract
+{
     use EntityControllerTrait;
 
-    function __config() {
+    function __config()
+    {
         return array(
             '#id' => 'id',
             '#name' => 'ec_topics',
@@ -26,14 +28,14 @@ class TopicEntity extends EntityAbstract {
                     '#title' => lks_lang('Tiêu đề'),
                     '#type' => 'text',
                     '#validate' => 'required',
-                    '#required' => true,
+                    '#required' => true
                 ),
                 'short_desc' => array(
                     '#name' => 'short_desc',
                     '#title' => lks_lang('Mô tả ngắn'),
                     '#type' => 'text',
                     '#validate' => 'required',
-                    '#required' => true,
+                    '#required' => true
                 ),
                 'content' => array(
                     '#name' => 'content',
@@ -46,7 +48,7 @@ class TopicEntity extends EntityAbstract {
                     '#title' => lks_lang('Giá sản phẩm'),
                     '#type' => 'text',
                     '#validate' => 'required|numeric',
-                    '#required' => true,
+                    '#required' => true
                 ),
                 'image' => array(
                     '#name' => 'image',
@@ -56,10 +58,10 @@ class TopicEntity extends EntityAbstract {
                     '#list_hidden' => true,
                     '#validate' => 'required|image|mimes:jpeg,png,gif',
                     '#empty_field_ajax_url' => 'topic/%id/empty-field/image',
-                    '#description' => lks_lang('Không chèn quảng cáo, Số điện thoại, Địa chỉ, Tên web... lên ảnh đại diện'),
+                    '#description' => lks_lang('Không chèn quảng cáo, Số điện thoại, Địa chỉ, Tên web... lên ảnh đại diện')
                 ),
                 'products' => array(
-                    '#name' => 'products',
+                    '#name' => 'products'
                 ),
                 'created_by' => array(
                     '#name' => 'created_by',
@@ -112,59 +114,60 @@ class TopicEntity extends EntityAbstract {
             )
         );
     }
-
+    
     /*
-    function ec_topics_warning($block) {
-        $data = [];
-
-        return lks_render('ec_topics_block_topic_warning|ec_topics', $data);
-    }
-
-    function ec_topics_warning_access($block) {
-        $uri = explode('/', \URL::current());
-
-        if (isset($uri[0]) && $uri[0] == 'e' && isset($uri[1]) && $uri[1] == 'read' && isset($uri[2]) && $uri[2] == 'ec_topics' && isset($uri[3]) && is_numeric($uri[3])) {
-            return true;
-        }
-
-        return false;
-    }
-
-    function category_get_posted($id) {
-        $cach_name = "ec_topics-get_category_posted-$id";
-        if ($cache = Cache::get($cach_name)) {
-            return $cache;
-        }
-
-        $posted = [];
-        $this->CI->load->model('ec_topics_model', '', false, 'ec_topics');
-        $category = $this->CI->ec_topics_model->get_category_posted($id);
-        if (count($category)) {
-            $entity = lks_instance_get()->load('\Kalephan\Category\CategoryEntity');
-            foreach ($category as $value) {
-                $category = $this->CI->category->loadEntity($value->id);
-                if (!empty($category->title)) {
-                    $title = $category->title;
-                    if (count($category->parent)) {
-                        $parent = reset($category->parent)->id;
-                        while ($parent) {
-                            $category_parent = $this->CI->category->loadEntity($parent);
-                            if (!empty($category_parent->title)) {
-                                $title = $category_parent->title . ' » ' . $title;
-                                $parent = count($category_parent->parent) ? reset($category_parent->parent)->id : 0;
-                            }
-                            else {
-                                $parent = 0;
-                            }
-                        }
-                    }
-
-                    $posted[$value->id] = $title;
-                }
-            }
-        }
-
-        Cache::forever($cach_name, $posted);
-        return $posted;
-    }*/
+     * function ec_topics_warning($block) {
+     * $data = [];
+     *
+     * return lks_render('ec_topics_block_topic_warning|ec_topics', $data);
+     * }
+     *
+     * function ec_topics_warning_access($block) {
+     * $uri = explode('/', \URL::current());
+     *
+     * if (isset($uri[0]) && $uri[0] == 'e' && isset($uri[1]) && $uri[1] == 'read' && isset($uri[2]) && $uri[2] == 'ec_topics' && isset($uri[3]) && is_numeric($uri[3])) {
+     * return true;
+     * }
+     *
+     * return false;
+     * }
+     *
+     * function category_get_posted($id) {
+     * $cach_name = "ec_topics-get_category_posted-$id";
+     * if ($cache = Cache::get($cach_name)) {
+     * return $cache;
+     * }
+     *
+     * $posted = [];
+     * $this->CI->load->model('ec_topics_model', '', false, 'ec_topics');
+     * $category = $this->CI->ec_topics_model->get_category_posted($id);
+     * if (count($category)) {
+     * $entity = lks_instance_get()->load('\Kalephan\Category\CategoryEntity');
+     * foreach ($category as $value) {
+     * $category = $this->CI->category->loadEntity($value->id);
+     * if (!empty($category->title)) {
+     * $title = $category->title;
+     * if (count($category->parent)) {
+     * $parent = reset($category->parent)->id;
+     * while ($parent) {
+     * $category_parent = $this->CI->category->loadEntity($parent);
+     * if (!empty($category_parent->title)) {
+     * $title = $category_parent->title . ' » ' . $title;
+     * $parent = count($category_parent->parent) ? reset($category_parent->parent)->id : 0;
+     * }
+     * else {
+     * $parent = 0;
+     * }
+     * }
+     * }
+     *
+     * $posted[$value->id] = $title;
+     * }
+     * }
+     * }
+     *
+     * Cache::forever($cach_name, $posted);
+     * return $posted;
+     * }
+     */
 }

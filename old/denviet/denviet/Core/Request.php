@@ -5,8 +5,11 @@ use Illuminate\Support\Facades\Request as LaravelRequest;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Session;
 
-class Request {
+class Request
+{
+
     private $path_prefix;
+
     private $data = array(
         'route' => '',
         'prefix' => '',
@@ -15,15 +18,25 @@ class Request {
         'original' => '',
         'segment' => [],
         'filter' => [],
-        'query' => [],
+        'query' => []
     );
 
-    public function __construct() {
-        $this->path_prefix = config('lks.request prefix paths', ['modal', 'ajax', 'json', 'esi', 'admin', 'up', 'iframe']);
+    public function __construct()
+    {
+        $this->path_prefix = config('lks.request prefix paths', [
+            'modal',
+            'ajax',
+            'json',
+            'esi',
+            'admin',
+            'up',
+            'iframe'
+        ]);
         $this->_parseURI();
     }
 
-    private function _getFilter(&$uri, &$filter = []) {
+    private function _getFilter(&$uri, &$filter = [])
+    {
         if (strpos($uri, '?')) {
             $uri = explode('?', $uri);
             $filter = isset($uri[1]) ? explode('&', $uri[1]) + $filter : $filter;
@@ -31,31 +44,37 @@ class Request {
         }
     }
 
-    public function parseURI($uri, $filter = []) {
+    public function parseURI($uri, $filter = [])
+    {
         $result = [];
         $result['full'] = $uri;
-
+        
         $this->_getFilter($uri, $filter);
         $result['original'] = $uri;
-
+        
         // Event fire 'request.uriAlter'
-        $data = ['uri' => &$uri];
+        $data = [
+            'uri' => &$uri
+        ];
         event('request.uriAlter', $data);
         $uri = $data['uri'];
-
+        
         $this->_getFilter($uri, $filter);
-
-        $uri  = explode('/', mb_strtolower($uri));
-
+        
+        $uri = explode('/', mb_strtolower($uri));
+        
         // Get Prefix
         $result['prefix'] = '';
         if (in_array($uri[0], $this->path_prefix)) {
             $result['prefix'] = array_shift($uri);
         }
-
+        
         $result['segment'] = $uri;
-        $result['segment'] = count($result['segment']) ? $result['segment'] : array('', '');
-
+        $result['segment'] = count($result['segment']) ? $result['segment'] : array(
+            '',
+            ''
+        );
+        
         $result['url'] = implode('/', $uri);
         $result['url'] = $result['url'] ? $result['url'] : '/';
         $result['filter'] = '';
@@ -63,15 +82,16 @@ class Request {
             $result['filter'] = $this->_parseFilter($filter['f']);
             unset($filter['f']);
         }
-
+        
         $result['query'] = $this->_parseQuery($filter);
-
+        
         return $result;
     }
 
-    private function _parseURI() {
+    private function _parseURI()
+    {
         $result = $this->parseURI(LaravelRequest::path(), LaravelRequest::query());
-
+        
         $this->data['prefix'] = $result['prefix'];
         $this->data['segment'] = $result['segment'];
         $this->data['url'] = $result['url'];
@@ -81,26 +101,28 @@ class Request {
         $this->data['query'] = $result['query'];
     }
 
-    public function filter($index = 'all', $default = false) {
+    public function filter($index = 'all', $default = false)
+    {
         return $this->_getDataIndex('filter', $index, $default);
     }
 
-    private function _getDataIndex($type, $index = 'all', $default = false) {
+    private function _getDataIndex($type, $index = 'all', $default = false)
+    {
         // Check this before for $index === 0
         if (isset($this->data[$type][$index])) {
             return $this->data[$type][$index];
-        }
-        elseif ($index == 'all') {
+        } elseif ($index == 'all') {
             return $this->data[$type];
         }
-
+        
         return $default;
     }
 
-    private function _parseFilter($filter) {
+    private function _parseFilter($filter)
+    {
         $cache_name = 'LKS-request-parsefilter' . Session::getId();
         $result = Cache::get($cache_name, []);
-
+        
         $filter = explode('|', $filter);
         if (count($filter)) {
             foreach ($filter as $value) {
@@ -110,46 +132,55 @@ class Request {
                 }
             }
         }
-
+        
         lks_cache_set($cache_name, $result);
         return $result;
     }
 
-    private function _parseQuery($query) {
+    private function _parseQuery($query)
+    {
         foreach ($query as $key => $value) {
             if (is_string($value)) {
-              $value = lks_str_slug(trim($value, '/'));
+                $value = lks_str_slug(trim($value, '/'));
             }
             $query[$key] = $value;
         }
         return $query;
     }
 
-    public function segment($index = 'all', $default = false) {
+    public function segment($index = 'all', $default = false)
+    {
         return $this->_getDataIndex('segment', $index, $default);
     }
 
-    public function prefix() {
+    public function prefix()
+    {
         return $this->data['prefix'];
     }
 
-    public function route() {
+    public function route()
+    {
         return $this->data['route'];
     }
 
-    public function url() {
+    public function url()
+    {
         return $this->data['url'];
     }
 
-    public function query($index = 'all', $default = false) {
+    public function query($index = 'all', $default = false)
+    {
         return $this->_getDataIndex('query', $index, $default);
     }
 
-    public function addCookie($key, $value) {
-        setcookie($key, $value, time()+60*60*24*30, '/');
+    public function addCookie($key, $value)
+    {
+        setcookie($key, $value, time() + 60 * 60 * 24 * 30, '/');
     }
-
-    /*public function urlFull() {
-        return $this->data['url_full'];
-    }*/
+    
+    /*
+     * public function urlFull() {
+     * return $this->data['url_full'];
+     * }
+     */
 }

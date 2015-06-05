@@ -3,15 +3,14 @@ namespace Kalephan\Core;
 
 use Illuminate\Support\Facades\Config;
 
-class CoreEvent {
-    public function makeURLAlterUACP(&$path, &$http) {
-        if ($path != '/'
-            && substr($path, 0, 2) != '//'
-            && substr($path, 0, 7) != 'http://'
-            && substr($path, 0, 8) != 'https://'
-        ) {
-            $path = trim($path, '/');
+class CoreEvent
+{
 
+    public function makeURLAlterUACP(&$path, &$http)
+    {
+        if ($path != '/' && substr($path, 0, 2) != '//' && substr($path, 0, 7) != 'http://' && substr($path, 0, 8) != 'https://') {
+            $path = trim($path, '/');
+            
             $matches = [];
             $pattern = '/{([A-z0-9-_.]+)?}/';
             if (preg_match($pattern, $path, $matches)) {
@@ -21,7 +20,8 @@ class CoreEvent {
         }
     }
 
-    public function uriAlterUACP(&$uri) {
+    public function uriAlterUACP(&$uri)
+    {
         if ($uri != '/') {
             $uri = trim($uri, '/');
             $matches = [];

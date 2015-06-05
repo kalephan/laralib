@@ -1,9 +1,14 @@
-<?php namespace Kalephan\LKS\Facades;
+<?php
+
+namespace Kalephan\LKS\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
-class Form extends Facade {
+class Form extends Facade
+{
 
-    protected static function getFacadeAccessor() { return 'Form'; }
-
+    protected static function getFacadeAccessor()
+    {
+        return 'Form';
+    }
 }

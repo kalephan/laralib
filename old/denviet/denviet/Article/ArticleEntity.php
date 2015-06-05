@@ -4,11 +4,12 @@ namespace Kalephan\Article;
 use Kalephan\LKS\EntityAbstract;
 use Kalephan\LKS\EntityControllerTrait;
 
-
-class ArticleEntity extends EntityAbstract{
+class ArticleEntity extends EntityAbstract
+{
     use EntityControllerTrait;
 
-    function __config() {
+    function __config()
+    {
         return array(
             '#id' => 'id',
             '#name' => 'articles',
@@ -20,18 +21,18 @@ class ArticleEntity extends EntityAbstract{
                 'clone' => '{backend}/article/%/clone',
                 'read' => '{frontend}/article/%',
                 'update' => '{backend}/article/%/update',
-                'delete' => '{backend}/article/%/delete',
+                'delete' => '{backend}/article/%/delete'
             ),
             '#fields' => array(
                 'id' => array(
                     '#name' => 'id',
                     '#title' => lks_lang('ID'),
-                    '#type' => 'hidden',
+                    '#type' => 'hidden'
                 ),
                 'title' => array(
                     '#name' => 'title',
                     '#title' => lks_lang('Tiêu đề'),
-                    '#type' => 'text',
+                    '#type' => 'text'
                 ),
                 'image' => array(
                     '#name' => 'image',
@@ -41,20 +42,20 @@ class ArticleEntity extends EntityAbstract{
                     '#style' => 'normal',
                     '#list_hidden' => true,
                     '#validate' => 'image|mimes:jpeg,png,gif',
-                    '#empty_field_ajax_url' => 'article/%id/empty-field/image',
+                    '#empty_field_ajax_url' => 'article/%id/empty-field/image'
                 ),
                 'summary' => array(
                     '#name' => 'summary',
                     '#title' => lks_lang('Tóm tắt'),
                     '#type' => 'textarea',
-                    '#list_hidden' => true,
+                    '#list_hidden' => true
                 ),
                 'content' => array(
                     '#name' => 'content',
                     '#title' => lks_lang('Nội dung'),
                     '#type' => 'textarea',
                     '#rte_enable' => true,
-                    '#list_hidden' => true,
+                    '#list_hidden' => true
                 ),
                 'active' => array(
                     '#name' => 'active',
@@ -62,10 +63,10 @@ class ArticleEntity extends EntityAbstract{
                     '#type' => 'radios',
                     '#options' => array(
                         1 => lks_lang('Bật'),
-                        0 => lks_lang('Tắt'),
+                        0 => lks_lang('Tắt')
                     ),
                     '#validate' => 'required|numeric',
-                    '#default' => 1,
+                    '#default' => 1
                 ),
                 'created_at' => array(
                     '#name' => 'created_at',
@@ -94,8 +95,8 @@ class ArticleEntity extends EntityAbstract{
                     /*'#type' => 'text',
                     '#form_hidden' => true,
                     '#list_hidden' => true,*/
-                ),
-            ),
+                )
+            )
         );
     }
 }

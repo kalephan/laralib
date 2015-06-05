@@ -1,29 +1,36 @@
-<?php namespace Kalephan\BodyClass;
+<?php
 
-class BodyClass {
-	private $data = [];
+namespace Kalephan\BodyClass;
 
-	public function get() {
-		return implode(' ', $this->data);
-	}
+class BodyClass
+{
 
-	public function add($class) {
-		if (!is_string($class)) {
-			throw new \Exception("Body class must is a string.");
-		}
+    private $data = [];
 
-		$this->data[] = $class;
-	}
+    public function get()
+    {
+        return implode(' ', $this->data);
+    }
 
-	public function set($classes) {
-		if (is_string($classes)) {
-			$classes = (array) $classes;
-		}
+    public function add($class)
+    {
+        if (! is_string($class)) {
+            throw new \Exception("Body class must is a string.");
+        }
+        
+        $this->data[] = $class;
+    }
 
-		if (!is_array($classes)) {
-			throw new \Exception("Body class must is an array.");
-		}
-
-		$this->data = $classes;
-	}
+    public function set($classes)
+    {
+        if (is_string($classes)) {
+            $classes = (array) $classes;
+        }
+        
+        if (! is_array($classes)) {
+            throw new \Exception("Body class must is an array.");
+        }
+        
+        $this->data = $classes;
+    }
 }

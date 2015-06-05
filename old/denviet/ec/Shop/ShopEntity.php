@@ -7,10 +7,12 @@ use Kalephan\Core\Form;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
-class ShopEntity extends EntityAbstract {
+class ShopEntity extends EntityAbstract
+{
     use EntityControllerTrait;
 
-    public function __config() {
+    public function __config()
+    {
         return array(
             '#id' => 'id',
             '#name' => 'ec_shops',
@@ -20,13 +22,13 @@ class ShopEntity extends EntityAbstract {
                 'list' => '{backend}/shop/list',
                 'read' => '{frontend}/shop/%',
                 'update' => '{backend}/shop/%/update',
-                'delete' => '{backend}/shop/%/delete',
+                'delete' => '{backend}/shop/%/delete'
             ),
             '#fields' => array(
                 'id' => array(
                     '#name' => 'id',
                     '#title' => lks_lang('ID'),
-                    '#type' => 'hidden',
+                    '#type' => 'hidden'
                 ),
                 'title' => array(
                     '#name' => 'title',
@@ -36,10 +38,10 @@ class ShopEntity extends EntityAbstract {
                     '#validate' => 'required|min:2|max:100',
                     '#attributes' => array(
                         'placeholder' => lks_lang('Shop Hoa Mai'),
-                        'data-required' => '',
+                        'data-required' => ''
                     ),
                     '#description' => lks_lang('Tên shop tối đa 100 ký tự, viết ngắn gọn và không chứa tên miền website'),
-                    '#error_message' => lks_lang('Trường này yêu cầu phải nhập.'),
+                    '#error_message' => lks_lang('Trường này yêu cầu phải nhập.')
                 ),
                 'path' => array(
                     '#name' => 'path',
@@ -50,12 +52,12 @@ class ShopEntity extends EntityAbstract {
                     '#attributes' => array(
                         'placeholder' => lks_lang('shop-hoa-mai'),
                         'size' => '32',
-                        'class' => 'urlalias',
+                        'class' => 'urlalias'
                     ),
                     '#ajax' => array(
                         'path' => 'shop/create/check-path',
-                        'wrapper' => 'fii_path',
-                    ),
+                        'wrapper' => 'fii_path'
+                    )
                 ),
                 'active' => array(
                     '#name' => 'active',
@@ -63,10 +65,10 @@ class ShopEntity extends EntityAbstract {
                     '#type' => 'radios',
                     '#options' => array(
                         1 => lks_lang('Bật'),
-                        0 => lks_lang('Tắt'),
+                        0 => lks_lang('Tắt')
                     ),
                     '#default' => 0,
-                    '#form_hidden' => 1,
+                    '#form_hidden' => 1
                 ),
                 'created_by' => array(
                     '#name' => 'created_by',
@@ -105,57 +107,62 @@ class ShopEntity extends EntityAbstract {
                     '#form_hidden' => 1,
                     '#list_hidden' => 1,
                 ),*/
-            ),
+            )
         );
     }
 
-    public function loadEntityByPath($path, $attributes = []) {
+    public function loadEntityByPath($path, $attributes = [])
+    {
         $attributes['where']['path'] = $path;
         return $this->loadEntityWhere($attributes);
     }
 
-    public function loadEntityByUser($id, $attributes = []) {
+    public function loadEntityByUser($id, $attributes = [])
+    {
         $attributes['where']['created_by'] = $id;
         return $this->loadEntityWhere($attributes);
     }
 
-    public function allowCreate() {
-        if (!$this->loadEntityByUser(Auth::id())) {
+    public function allowCreate()
+    {
+        if (! $this->loadEntityByUser(Auth::id())) {
             return true;
         }
-
+        
         lks_instance_get()->response->addMessage(lks_lang('Mỗi thành viên chỉ được mở một shop.'), 'error');
         return lks_redirect(lks_url('{userpanel}/shop/shop/update'));
     }
 
-    function showCreateCheckPathForm($lks) {
+    function showCreateCheckPathForm($lks)
+    {
         $form = [];
         $form['path'] = $this->structure->fields['path'];
         $value = $lks->request->query('path', '');
-
-        $validator = Validator::make(
-            array('path' => $value),
-            array('path' => $form['path']['#validate'])
-        );
-
+        
+        $validator = Validator::make(array(
+            'path' => $value
+        ), array(
+            'path' => $form['path']['#validate']
+        ));
+        
         $form['path']['#value'] = $value;
-
+        
         if ($validator->fails()) {
             $error = lks_object_to_array(json_decode($validator->message()));
             $form['path']['#error_message'] = implode('<br />', $error['path']);
             $form['path']['#class'] = isset($form['path']['#class']) ? $form['path']['#class'] . ' error' : 'error';
-        }
-        else {
+        } else {
             $form['path']['#class'] = isset($form['path']['#class']) ? $form['path']['#class'] . ' success' : 'success';
         }
-
+        
         $form['path'] = Form::buildItem($form['path']);
         $lks->response->addContent(lks_form_render('path', $form));
     }
 
-    public function convertEntityId($entity_id) {
+    public function convertEntityId($entity_id)
+    {
         $entity_id = parent::convertEntityId($entity_id);
-
+        
         switch ($entity_id) {
             case 'shop':
                 if ($ec = $this->loadEntityByUser(Auth::id())) {
@@ -163,7 +170,7 @@ class ShopEntity extends EntityAbstract {
                 }
                 break;
         }
-
+        
         return $entity_id;
     }
 }

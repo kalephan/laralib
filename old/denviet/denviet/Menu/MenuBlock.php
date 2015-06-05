@@ -3,16 +3,18 @@ namespace Kalephan\Menu;
 
 use Illuminate\Support\Facades\View;
 
-class MenuBlock {
-    public function blockMenu($block) {
+class MenuBlock
+{
+
+    public function blockMenu($block)
+    {
         $block_class = explode('@', $block->class);
         if (isset($block_class[2])) {
-            $menu_group =  $block_class[2];
-        }
-        else {
+            $menu_group = $block_class[2];
+        } else {
             return '';
         }
-
+        
         $result = '';
         $menu = lks_instance_get()->load('\Kalephan\Menu\MenuEntity')->tree($menu_group);
         if (count($menu)) {
@@ -28,22 +30,23 @@ class MenuBlock {
                     $menu[$key]['path'] = implode('/', $value['path']);
                 }
             }
-
+            
             $data = array(
-                'menu' => $menu,
+                'menu' => $menu
             );
-
+            
             $template = 'menu-' . $menu_group;
-            if (!View::exists($template)) {
+            if (! View::exists($template)) {
                 $template = 'menu';
             }
             $result = lks_render($template, $data);
         }
-
+        
         return $result;
     }
 
-    public function blockMenuAdminAccess($block) {
+    public function blockMenuAdminAccess($block)
+    {
         return lks_instance_get()->response->isAdminPanel();
     }
 }

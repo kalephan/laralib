@@ -3,8 +3,11 @@ namespace Kalephan\Core;
 
 use Illuminate\Support\Facades\Config;
 
-class Route {
-    function getRouteItem($paths, &$path = '') {
+class Route
+{
+
+    function getRouteItem($paths, &$path = '')
+    {
         if (is_string($paths)) {
             $paths = explode('/', $paths);
         }
@@ -16,7 +19,7 @@ class Route {
                 return $menu;
             }
         }
-
+        
         return false;
     }
 }

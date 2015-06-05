@@ -1,9 +1,14 @@
-<?php namespace Kalephan\BodyClass\Facades;
+<?php
+
+namespace Kalephan\BodyClass\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
-class BodyClass extends Facade {
+class BodyClass extends Facade
+{
 
-    protected static function getFacadeAccessor() { return 'BodyClass'; }
-
+    protected static function getFacadeAccessor()
+    {
+        return 'BodyClass';
+    }
 }

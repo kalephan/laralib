@@ -1,7 +1,11 @@
-<?php namespace Kalephan\User;
+<?php
+
+namespace Kalephan\User;
 
 use Illuminate\Database\Eloquent\Model;
 
-class UserEntityModel extends Model{
-	protected $table = 'users';
+class UserEntityModel extends Model
+{
+
+    protected $table = 'users';
 }

@@ -2,12 +2,14 @@
 namespace Kalephan\Style;
 
 use Kalephan\LKS\EntityAbstract;
-
 use Illuminate\Support\Facades\File;
 use Intervention\Image\ImageManagerStatic as Image;
 
-class StyleEntity extends EntityAbstract {
-    function __config() {
+class StyleEntity extends EntityAbstract
+{
+
+    function __config()
+    {
         return array(
             '#id' => 'style',
             '#name' => 'styles',
@@ -54,93 +56,95 @@ class StyleEntity extends EntityAbstract {
                     ),
                     '#validate' => 'numeric|between:0,1',
                     '#default' => 0,*/
-                ),
+                )
             ),
-            '#indelibility' => array(1, 2),
+            '#indelibility' => array(
+                1,
+                2
+            )
         );
     }
 
-    public function image($file_original, $style = 'normal') {
+    public function image($file_original, $style = 'normal')
+    {
         $style = $this->loadEntity($style);
-
-        if (!isset($style->style)) {
+        
+        if (! isset($style->style)) {
             $img = Image::make(public_path() . $file_original);
-
+            
             $image = array(
                 'path' => $file_original,
                 'width' => $img->width(),
-                'height' => $img->height(),
+                'height' => $img->height()
             );
-        }
-        else {
+        } else {
             $path_file = config('lks.file path', '/files');
             $path_style = "$path_file/styles/$style";
             $file_style = "$path_style/" . str_replace("$path_file//f14/images/", '', $file_original);
-
-            if (!file_exists(public_path() . $file_style)) {
+            
+            if (! file_exists(public_path() . $file_style)) {
                 $this->_createDirectory(public_path() . $file_style);
                 $img = Image::make(public_path() . $file_original);
-
+                
                 switch ($style->type) {
                     case 'scale-and-crop':
                         $img->resize($style->width, $style->height, function ($constraint) {
                             $constraint->aspectRatio();
                         });
                         $img->crop($style->width, $style->height);
-
+                        
                         $img->fill(config('lks.file image background', '#ffffff'), 0, 0);
-
+                        
                         break;
-
+                    
                     case 'scale':
-                        $style->width = !empty($style->width) ? $style->width : null;
-                        $style->height = !empty($style->height) ? $style->height : null;
-
-                        if (!empty($style->is_upsize)) {
+                        $style->width = ! empty($style->width) ? $style->width : null;
+                        $style->height = ! empty($style->height) ? $style->height : null;
+                        
+                        if (! empty($style->is_upsize)) {
                             $img->resize($style->width, $style->height, function ($constraint) {
                                 $constraint->aspectRatio();
                                 $constraint->upsize();
                             });
-                        }
-                        else {
+                        } else {
                             $img->resize($style->width, $style->height, function ($constraint) {
                                 $constraint->aspectRatio();
                             });
                         }
-
+                        
                         break;
                 }
-
+                
                 $img->save(public_path() . $file_style, config('lks.file image quality', 70));
-            }
-            else {
+            } else {
                 $img = Image::make(public_path() . $file_style);
             }
-
+            
             $image = array(
                 'path' => $file_style,
                 'width' => $img->width(),
-                'height' => $img->height(),
+                'height' => $img->height()
             );
         }
-
+        
         return $image;
     }
 
-    private function _createDirectory($path_style) {
-        //remove file name
+    private function _createDirectory($path_style)
+    {
+        // remove file name
         $path_style = substr($path_style, 0, strrpos($path_style, '/'));
-
+        
         if (File::isDirectory($path_style)) {
             return;
         }
-
+        
         $path_style = explode('/', $path_style);
         $path = array_shift($path_style);
         if (count($path_style)) {
             foreach ($path_style as $path_sub) {
                 $path .= "/$path_sub";
-                if (!File::isDirectory($path)) {
+                if (! File::isDirectory($path)) {
                     File::makeDirectory($path);
                 }
             }

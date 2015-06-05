@@ -1,4 +1,11 @@
-/bootstrap/compiled.php
-.env.*.php
-.env.php
-.env
+/vendor
+/node_modules
+*~
+.*
+!.htaccess
+!.gitignore
+!.gitattributes
+!.env.example
+
+# Ignore paths that contain generated content.
+public/files

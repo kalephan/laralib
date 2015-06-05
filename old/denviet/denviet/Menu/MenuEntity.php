@@ -4,8 +4,11 @@ namespace Kalephan\Menu;
 use Kalephan\LKS\EntityAbstract;
 use Illuminate\Support\Facades\Cache;
 
-class MenuEntity extends EntityAbstract {
-    public function __config() {
+class MenuEntity extends EntityAbstract
+{
+
+    public function __config()
+    {
         return array(
             '#id' => 'id',
             '#name' => 'menus',
@@ -13,7 +16,7 @@ class MenuEntity extends EntityAbstract {
             '#title' => lks_lang('menu'),
             '#order' => array(
                 'weight' => 'asc',
-                'title' => 'asc',
+                'title' => 'asc'
             ),
             '#fields' => array(
                 'id' => array(
@@ -86,29 +89,31 @@ class MenuEntity extends EntityAbstract {
                         0 => lks_lang('Tắt'),
                     ),
                     '#validate' => 'required|numeric|between:0,1'*/
-                ),
-            ),
+                )
+            )
         );
     }
 
-    public function loadEntityAllByGroup($group, $attributes = []) {
-        if (!isset($attributes['where'])) {
+    public function loadEntityAllByGroup($group, $attributes = [])
+    {
+        if (! isset($attributes['where'])) {
             $attributes['where'] = [];
         }
         $attributes['where']['group'] = $group;
-
+        
         return $this->loadEntityAll($attributes);
     }
-
+    
     // Get tree menu of a group
-    public function tree($group) {
+    public function tree($group)
+    {
         $cache_name = __METHOD__ . $group;
         if ($cache = Cache::get($cache_name)) {
             return $cache;
         }
-
+        
         $menu = $this->loadEntityAllByGroup($group);
-
+        
         $result = [];
         if (count($menu)) {
             foreach ($menu as $key => $value) {
@@ -116,7 +121,7 @@ class MenuEntity extends EntityAbstract {
             }
             $result = lks_tree_build($menu);
         }
-
+        
         Cache::forever($cache_name, $result);
         return $result;
     }

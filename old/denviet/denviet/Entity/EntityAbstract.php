@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Session;
 
-abstract class EntityAbstract {
-
-
+abstract class EntityAbstract
+{
 }
