@@ -34,6 +34,11 @@ class Output
 
     public function closure()
     {
+        $closure = new \stdClass();
+        $closure->closure = $this->data['closure'];
+        event('lks.outputClosure', $closure);
+        $this->data['closure'] = $closure->closure;
+        
         return implode('', $this->data['closure']);
     }
 
@@ -48,6 +53,11 @@ class Output
 
     public function head()
     {
+        $head = new \stdClass();
+        $head->head = $this->data['head'];
+        event('lks.outputHead', $head);
+        $this->data['head'] = $head->head;
+        
         return implode('', $this->data['head']);
     }
 
@@ -66,8 +76,8 @@ class Output
         
         $title = new \stdClass();
         $title->title = $this->data['title'];
-        event('lks.PageTitle', $title);
-        $this->data['title']= $title;
+        event('lks.outputTitle', $title);
+        $this->data['title'] = $title->title;
         
         return view('pagetitle')->with('title', $this->data['title']);
     }

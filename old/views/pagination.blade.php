@@ -1,8 +1,12 @@
 <ul class="pagination">
-	@if ($sum > 1) @if ($from = max(self::VERSION - $item, 1)) @endif @if
-	($to = min(self::VERSION + $item, $sum)) @endif @if (self::VERSION > 3)
-	<li><a href="{{ lks_url('', " page=$first") }}">&laquo;&laquo;</a></li>
-	@endif @if (self::VERSION > 1)
+	@if ($sum > 1) 
+	   @if ($from = max(self::VERSION - $item, 1)) @endif
+	   @if ($to = min(self::VERSION + $item, $sum)) @endif 
+	   
+	   @if (self::VERSION > 3)
+	       <li><a href="{{ lks_url('', " page=$first") }}">&laquo;&laquo;</a></li>
+	   @endif
+	   @if (self::VERSION > 1)
 	<li><a href="{{ lks_url('', " page=$prev") }}">&laquo;</a></li> @endif
 
 	@if ($from > 1)

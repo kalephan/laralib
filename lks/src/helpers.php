@@ -372,6 +372,42 @@ function lks_table_cell($cell, $header = FALSE)
     return $output;
 }
 
+function lks_url($url, $parameters = [], $secure = null)
+{
+    $link = new stdClass();
+    $link->url = $url;
+    $link->parameters = $parameters;
+    $link->secure = $secure !== null ? $secure : config('lks.link_secure', false);
+    event('lks.makeLink', $link);
+    
+    return url($link->url, $link->parameters, $link->secure); 
+}
+
+function lks_validate_email($email)
+{
+    return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
+}
+
+function lks_view($view = null, $data = [], $mergeData = [])
+{
+    return view(Output::page($view), $data, $mergeData);
+}
+
+function lks_view_paths()
+{
+    $paths = array_merge(
+        config('view.paths', []),
+        [
+            config('lks.theme_default', realpath(base_path('vendor/kalephan/lks/views'))),
+            config('lks.theme_backend', realpath(base_path('vendor/kalephan/lks/views')))
+        ],
+        Output::path(),
+        [config('lks.theme_engine', realpath(base_path('vendor/kalephan/lks/views')))]
+    );
+    
+    return array_unique($paths);
+}
+
 /*
  * $items = array(
  * '<a href="/">Home</a>',
@@ -512,24 +548,3 @@ function lks_table_cell($cell, $header = FALSE)
  * return $url;
  * }
  */
-function lks_validate_email($email)
-{
-    return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
-}
-
-function lks_view($view = null, $data = [], $mergeData = [])
-{
-    return view(Output::page($view), $data, $mergeData);
-}
-
-function lks_view_paths()
-{
-    $paths = array_merge(config('view.paths'), [
-        config('lks.theme_default'),
-        config('lks.theme_backend')
-    ], Output::path(), [
-        config('lks.theme_engine')
-    ]);
-    
-    return array_unique($paths);
-}
