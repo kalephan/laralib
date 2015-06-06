@@ -6,7 +6,7 @@ use Kalephan\LKS\Facades\Form;
 use Kalephan\LKS\Facades\Output;
 use Illuminate\Pagination\Paginator;
 
-trait UserAdminController
+trait UserAdminControllerTrait
 {
 
     public function getIndex()
