@@ -61,9 +61,7 @@ class Form
         // Create cache to use when form submitted
         lks_cache_set($cache_name_error_form, $form, config('session.lifetime', 120));
         
-        return view($form->theme, [
-            'form' => $form
-        ]);
+        return view($form->theme, ['form' => $form]);
     }
 
     private static function formInit($form_id)
@@ -387,9 +385,7 @@ class Form
             
             $item['#body'] = self::renderItem($item);
             
-            return view($template, array(
-                'element' => $item
-            ));
+            return view($template, ['element' => $item]);
         }
         
         return '';
@@ -544,10 +540,10 @@ class Form
             if ($form->redirect) {
                 return redirect($form->redirect);
             }
-        }         // Set default value for error form
+        }
+        // Set default value for error form
         else {
             lks_cache_set($cache_name, $form);
-            return false;
         }
         
         /*
@@ -585,7 +581,7 @@ class Form
          * }
          */
         
-        return true;
+        return redirect(Request::path());
     }
 
     private static function submitValidate(&$form, &$form_values)

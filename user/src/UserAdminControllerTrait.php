@@ -36,12 +36,6 @@ trait UserAdminControllerTrait
 
     public function postAdd()
     {
-        $result = Form::submit();
-        
-        if ($result === false || $result === true) {
-            $result = $this->getAdd();
-        }
-        
-        return $result;
+        return Form::submit();
     }
 }
