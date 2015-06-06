@@ -2,6 +2,8 @@
 
 namespace Kalephan\LKS;
 
+use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\MessageBag;
 
 class Output
@@ -14,7 +16,6 @@ class Output
     ];
 
     private $message;
-
     private $message_key = [
         'error',
         'warning',
@@ -22,9 +23,7 @@ class Output
         'success',
         'primary'
     ];
-
     private $page = '';
-
     private $path = [];
 
     public function __construct()
@@ -113,7 +112,14 @@ class Output
 
     public function page($page = null)
     {
-        return ($this->page ? $this->page : $page);
+        $page = $this->page ? $this->page : $page;
+        
+        $page_modal = "$page-modal";
+        if (Request::ajax() && View::exists($page_modal)) {
+            $page = $page_modal;
+        }
+        
+        return $page;
     }
 
     public function pageSet($page)
