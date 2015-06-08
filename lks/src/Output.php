@@ -12,7 +12,8 @@ class Output
     private $data = [
         'title' => [],
         'head' => [],
-        'closure' => []
+        'breadcrumb' => [],
+        'closure' => [],
     ];
 
     private $message;
@@ -87,6 +88,29 @@ class Output
             throw new \Exception('Title item must is string.');
         } else {
             array_unshift($this->data['title'], $title);
+        }
+    }
+
+    public function breadcrumb()
+    {
+        $this->data['breadcrumb'] = lks_array_merge_deep(['/' => lks_lang('Trang chủ')], $this->data['breadcrumb']);
+        
+        $head = new \stdClass();
+        $head->breadcrumb = $this->data['breadcrumb'];
+        event('lks.outputBreadcrumb', $head);
+        $this->data['breadcrumb'] = $head->breadcrumb;
+        
+        k($this->data['breadcrumb']);
+        
+        return view('breadcrumb', ['breadcrumb' => $this->data['breadcrumb']]);
+    }
+
+    public function breadcrumbAdd($items)
+    {
+        if (!is_array($items)) {
+            throw new \Exception('Breadcrumb item must is array.');
+        } else {
+            $this->data['breadcrumb'] = lks_array_merge_deep($this->data['breadcrumb'], $items);
         }
     }
 

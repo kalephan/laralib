@@ -25,6 +25,7 @@ trait UserControllerTrait
     public function getRegister()
     {
         Output::titleAdd(lks_lang('Đăng ký thành viên'));
+        Output::breadcrumbAdd([['url' => '<none>', 'title'=> 'Đăng ký thành viên']]);
         
         return lks_view('page', [
             'content' => Form::build('Kalephan\User\UserForm@formCreate')

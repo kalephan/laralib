@@ -10,6 +10,7 @@
     @section('head') {!!Output::head()!!} @show
 </head>
 <body>
+    @section('breadcrumb') {!!Output::breadcrumb()!!} @show
     @section('message') {!!Output::message()!!} @show
     @yield('content')
 	@section('closure') {!!Output::closure()!!} @show

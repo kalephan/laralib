@@ -26,6 +26,8 @@ class LKSServiceProvider extends ServiceProvider
         
         // Set view paths
         Config::set('view.paths', lks_view_paths());
+        
+        require_once __DIR__ . '/macro.php';
     }
 
     /**

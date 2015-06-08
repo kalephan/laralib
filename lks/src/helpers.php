@@ -5,6 +5,8 @@ use Kalephan\LKS\Facades\Output;
 use Illuminate\Html\HtmlFacade as HTML;
 use Illuminate\Html\FormFacade as LaravelForm;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 
 // https://api.drupal.org/api/drupal/includes!bootstrap.inc/function/drupal_array_merge_deep/7
@@ -128,6 +130,10 @@ function lks_form_error($form)
     
     return HTML::ul($data);
 }
+
+/* function lks_html_ul($list, $attributes = []) {
+    return HTML::ul($list, $attributes);
+} */
 
 function lks_lang($line, $trans = [], $file = null)
 {
@@ -408,49 +414,6 @@ function lks_view_paths()
     return array_unique($paths);
 }
 
-/*
- * $items = array(
- * '<a href="/">Home</a>',
- * array(
- * '#item' => '<a href="/">Framework</a>',
- * '#children' => array(
- * '<a href="/">Symfony</a>',
- * ['#item' => '<a href="/">Laravel</a>'],
- * '<a href="/">Codeigniter</a>',
- * ),
- * ),
- * ['#item' => '<a href="/">Contact Us</a>'],
- * );
- * echo lks_item_list($items);
- */
-/*
- * function lks_item_list($items, $level = 1, $attributes = []) {
- * $attributes['class'] .= isset($attributes['class']) ? ' ' : '';
- * $attributes['class'] .= 'items-level-' . $level;
- *
- * $result = '<ul ' . HTML::attributes($attributes) . '>';
- * foreach ($items as $value) {
- * $result .= '<li>';
- * if (is_string($value)) {
- * $result .= $value;
- * }
- * elseif (is_array($value) && count($value)) {
- * if (isset($value['#item'])) {
- * $result .= $value['#item'];
- * }
- *
- * if (isset($value['#children'])) {
- * $result .= lks_item_list($value['#children'], $level++);
- * }
- * }
- * $result .= '</li>';
- * }
- * $result .= '</ul>';
- *
- * return $result;
- * }
- */
-
 // lks_url2alias('search/product?c2=808&brand=viet-tien', 'Quan ao')
 // ==> quan-ao_search.product:c2.808;brand.viet-tien
 /*
@@ -548,3 +511,5 @@ function lks_view_paths()
  * return $url;
  * }
  */
+
+
