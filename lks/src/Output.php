@@ -100,8 +100,6 @@ class Output
         event('lks.outputBreadcrumb', $head);
         $this->data['breadcrumb'] = $head->breadcrumb;
         
-        k($this->data['breadcrumb']);
-        
         return view('breadcrumb', ['breadcrumb' => $this->data['breadcrumb']]);
     }
 

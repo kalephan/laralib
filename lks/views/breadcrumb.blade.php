@@ -1,3 +1,3 @@
 @if (count($breadcrumb)) 
-    {!!HTML::decode(HTML::ul($breadcrumb, ['class' => 'breadcrumb']))!!}
+    {!!HTML::nav($breadcrumb, ['class' => 'breadcrumb'])!!}
 @endif
