@@ -20,9 +20,9 @@ class LKSServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__ . '/../config/lks.php' => config_path('lks.php')
         ], 'config');
-        $this->publishes([
+        /* $this->publishes([
             __DIR__ . '/../database/migrations/' => base_path('/database/migrations')
-        ], 'migrations');
+        ], 'migrations'); */
         
         // Set view paths
         Config::set('view.paths', lks_view_paths());
