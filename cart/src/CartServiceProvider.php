@@ -14,7 +14,10 @@ class CartServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        // Publishes
+        $this->publishes([
+            __DIR__ . '/../database/migrations/' => base_path('/database/migrations')
+        ], 'migrations');
     }
 
     /**

@@ -27,7 +27,7 @@ class CouponInstall
 
     private static function up_0_01()
     {
-        Schema::table('ec_products', function ($table) {
+        Schema::table('cart_products', function ($table) {
             $table->integer('coupon_value')->nullable();
             $table->char('coupon_type', 16)->nullable();
             $table->dateTime('coupon_start')->nullable();
@@ -36,7 +36,7 @@ class CouponInstall
         
         DB::table('events')->insert(array(
             array(
-                'name' => 'entity.structureAlter.ec_products',
+                'name' => 'entity.structureAlter.cart_products',
                 'class' => '\Kalephan\Ec\Coupon\CouponEvent@structureAlterProduct'
             )
         ));

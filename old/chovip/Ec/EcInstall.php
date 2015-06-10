@@ -22,7 +22,7 @@ class EcInstall
     // Target: 01-01-2015
     private static function up_0_01x()
     {
-        Schema::table('ec_products', function ($table) {
+        Schema::table('cart_products', function ($table) {
             $table->integer('topic')
                 ->unsigned()
                 ->nullable();
@@ -58,7 +58,7 @@ class EcInstall
             $table->string('approve', 128)->nullable();
         });
         
-        Schema::table('ec_products', function ($table) {
+        Schema::table('cart_products', function ($table) {
             $table->tinyInteger('label')->nullable();
         });
         
