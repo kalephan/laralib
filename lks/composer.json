@@ -1,10 +1,18 @@
 {
-	"name": "kalephan/admin",
+	"name": "kalephan/lks",
 	"require": {
+	    "laravel/framework": "5.0.*",
+        "illuminate/html": "5.0.*",
+        "kriswallsmith/assetic": "1.2.*",
+        "mrclay/minify": "2.*",
+        "natxet/CssMin": "3.*"
 	},
 	"autoload": {
+        "files": [
+            "src/helpers.php"
+        ],
 		"psr-4": {
-			"Kalephan\\Admin\\": "vendor/kalephan/admin/src/"
+			"Kalephan\\LKS\\": "src/"
 		}
 	}
 }

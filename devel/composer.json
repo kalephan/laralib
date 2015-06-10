@@ -1,10 +1,13 @@
 {
-	"name": "kalephan/admin",
+	"name": "kalephan/devel",
 	"require": {
+	    "kalephan/lks": "0.1.*",
+	    "barryvdh/laravel-debugbar": "2.0.*",
+        "oodle/krumo": "*"
 	},
 	"autoload": {
 		"psr-4": {
-			"Kalephan\\Admin\\": "vendor/kalephan/admin/src/"
+			"Kalephan\\Devel\\": "src/"
 		}
 	}
 }

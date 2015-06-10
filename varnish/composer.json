@@ -1,10 +1,10 @@
 {
-	"name": "kalephan/admin",
+	"name": "kalephan/varnish",
 	"require": {
 	},
 	"autoload": {
 		"psr-4": {
-			"Kalephan\\Admin\\": "vendor/kalephan/admin/src/"
+			"Kalephan\\Varnish\\": "src/"
 		}
 	}
 }

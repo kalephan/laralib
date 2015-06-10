@@ -1,10 +1,11 @@
 {
-	"name": "kalephan/admin",
-	"require": {
-	},
-	"autoload": {
-		"psr-4": {
-			"Kalephan\\Admin\\": "vendor/kalephan/admin/src/"
-		}
-	}
+    "name": "kalephan/contact",
+    "require": {
+        "kalephan/lks": "0.1.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Kalephan\\Contact\\": "src/"
+        }
+    }
 }
