@@ -1,0 +1,11 @@
+{
+    "name": "kalephan/style",
+    "require": {
+        "kalephan/lks": "0.1.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Kalephan\\Style\\": "src/"
+        }
+    }
+}
