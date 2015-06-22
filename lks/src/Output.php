@@ -14,6 +14,7 @@ class Output
         'head' => [],
         'breadcrumb' => [],
         'closure' => [],
+        'bodyclass'=> [],
     ];
 
     private $message;
@@ -38,7 +39,7 @@ class Output
         $closure->closure = $this->data['closure'];
         event('lks.outputClosure', $closure);
         $this->data['closure'] = $closure->closure;
-        
+
         return implode('', $this->data['closure']);
     }
 
@@ -57,7 +58,7 @@ class Output
         $head->head = $this->data['head'];
         event('lks.outputHead', $head);
         $this->data['head'] = $head->head;
-        
+
         return implode('', $this->data['head']);
     }
 
@@ -73,12 +74,12 @@ class Output
     public function title()
     {
         $this->data['title'][] = config('lks.sitename');
-        
+
         $title = new \stdClass();
         $title->title = $this->data['title'];
         event('lks.outputTitle', $title);
         $this->data['title'] = $title->title;
-        
+
         return view('pagetitle')->with('title', $this->data['title']);
     }
 
@@ -86,20 +87,39 @@ class Output
     {
         if (! is_string($title)) {
             throw new \Exception('Title item must is string.');
-        } else {
-            array_unshift($this->data['title'], $title);
         }
+
+        array_unshift($this->data['title'], $title);
+    }
+
+    public function bodyclass()
+    {
+        $bodyclass = new \stdClass();
+        $bodyclass->bodyclass = $this->data['bodyclass'];
+        event('lks.outputBodyclass', $bodyclass);
+        $this->data['bodyclass'] = $bodyclass->bodyclass;
+
+        return implode(' ', $this->data['bodyclass']);
+    }
+
+    public function bodyclassAdd($bodyclass)
+    {
+        if (! is_string($bodyclass)) {
+            throw new \Exception('Title item must is string.');
+        }
+
+        $this->data['bodyclass'][] = $bodyclass;
     }
 
     public function breadcrumb()
     {
         $this->data['breadcrumb'] = lks_array_merge_deep(['/' => lks_lang('Trang chủ')], $this->data['breadcrumb']);
-        
+
         $head = new \stdClass();
         $head->breadcrumb = $this->data['breadcrumb'];
         event('lks.outputBreadcrumb', $head);
         $this->data['breadcrumb'] = $head->breadcrumb;
-        
+
         return view('breadcrumb', ['breadcrumb' => $this->data['breadcrumb']]);
     }
 
@@ -107,9 +127,9 @@ class Output
     {
         if (!is_array($items)) {
             throw new \Exception('Breadcrumb item must is array.');
-        } else {
-            $this->data['breadcrumb'] = lks_array_merge_deep($this->data['breadcrumb'], $items);
         }
+
+        $this->data['breadcrumb'] = lks_array_merge_deep($this->data['breadcrumb'], $items);
     }
 
     public function message()
@@ -118,7 +138,7 @@ class Output
         foreach ($this->message_key as $key) {
             $message[$key] = $this->message->get($key);
         }
-        
+
         return view('message')->with('message', $message);
     }
 
@@ -135,12 +155,12 @@ class Output
     public function page($page = null)
     {
         $page = $this->page ? $this->page : $page;
-        
+
         $page_modal = "$page-modal";
         if (Request::ajax() && View::exists($page_modal)) {
             $page = $page_modal;
         }
-        
+
         return $page;
     }
 

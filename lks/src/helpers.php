@@ -173,8 +173,7 @@ function lks_str_slug($text)
     $text = strip_tags($text); // Strip html & php tag
     $text = lks_str_utf82ascii($text); // Convert utf8 to similar ascii character
     $text = strtolower($text); // Change uppercase to lowercase
-    $text = preg_replace('/[^a-z0-9\-_\/]/u', '-', $text); // Replace unexpected character
-                                                           // full trim "-" characters
+    $text = preg_replace('/[^a-z0-9\-_\/]/u', '-', $text); // Replace unexpected character and full trim "-" characters
     $text = preg_replace('/(?:(?:^|\n)-+|-+(?:$|\n))/u', '', $text);
     $text = preg_replace('/-+/u', '-', $text);
     
