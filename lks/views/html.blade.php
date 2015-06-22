@@ -15,7 +15,7 @@
     </div>
 
     <div id="header" class="container region">
-        @section('header') @show
+        @section('header') @include('block_header') @show
     </div>
 
     <div id="primary-menu" class="container region">
