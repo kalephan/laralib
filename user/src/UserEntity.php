@@ -14,6 +14,7 @@ class UserEntity extends EntityAbstract
         $structure->indelibility = [
             1
         ];
+        $structure->url_prefix = 'user';
         $structure->fields = [
             'id' => [
                 '#title' => lks_lang('ID')

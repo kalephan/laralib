@@ -20,7 +20,7 @@ function lks_array_merge_deep()
 function _lks_array_merge_deep_array($arrays)
 {
     $result = [];
-    
+
     foreach ($arrays as $array) {
         foreach ($array as $key => $value) {
             // Renumber integer keys as array_merge_recursive() does. Note that PHP
@@ -40,40 +40,41 @@ function _lks_array_merge_deep_array($arrays)
             }
         }
     }
-    
+
     return $result;
 }
 
 function lks_cache_name($name)
 {
     $cache = Cache::get(__FUNCTION__, []);
-    
+
     if (! isset($cache[$name])) {
         $cache[$name] = count($cache);
         Cache::forever(__FUNCTION__, $cache);
     }
-    
+
     return $cache[$name];
 }
 
 function lks_cache_set($cache, $value, $expired = null)
 {
     $expired = $expired ? $expired : Carbon::now()->addMinutes(config('lks.cache_ttl', 10));
-    
+
     return Cache::put($cache, $value, $expired);
 }
 
-function lks_entities2table($entities, $fields, $cols = [])
+function lks_entities2table($entities, $structure, $cols = [])
 {
     $data = [
         'header' => [],
         'rows' => []
     ];
-    
+
+    $fields = $structure->fields;
     if ($cols) {
         $fields = array_intersect_key($fields, $cols);
     }
-    
+
     foreach ($fields as $key => $field) {
         if (! empty($field['#not_listed'])) {
             unset($fields[$key]);
@@ -81,15 +82,48 @@ function lks_entities2table($entities, $fields, $cols = [])
             $data['header'][] = $field['#title'];
         }
     }
-    
+
+    if (count($structure->actions)) {
+        $data['header'][] = lks_lang('Hoạt động');
+    }
+
     foreach ($entities as $entity) {
         $row = [];
         foreach ($fields as $key => $field) {
-            $row[] = $entity->$key;
+            if (isset($field['#reference'])) {
+                if (!empty($entity->$key)) {
+                    $row[] = $entity->$key->{$field['#reference']['title']};
+                }
+                else {
+                    $row[] = '';
+                }
+            }
+            else {
+                $row[] = $entity->$key;
+            }
+
         }
+
+        if (count($structure->actions)) {
+            $links = '';
+            foreach ($structure->actions as $key => $value) {
+                $trans_key = [
+                    '@structure_url_prefix',
+                    '@id',
+                ];
+                $trans_value = [
+                    $structure->url_prefix,
+                    $entity->{$structure->id},
+                ];
+                $value['url'] = str_replace($trans_key, $trans_value, $value['url']);
+                $links .= '<a href=" ' . lks_url($value['url']) . ' " clas="actions_link actions_'.$key.'">' . $value['title'] . '</a> ';
+            }
+            $row[] = $links;
+        }
+
         $data['rows'][] = $row;
     }
-    
+
     return $data;
 }
 
@@ -127,7 +161,7 @@ function lks_form_error($form)
     foreach ($form->error as $value) {
         $data += $value;
     }
-    
+
     return HTML::ul($data);
 }
 
@@ -149,11 +183,11 @@ function lks_lang($line, $trans = [], $file = null)
         $tmp = "$file.$tmp";
     }
     $text = Lang::get($tmp, $trans);
-    
+
     if ($text == $tmp) {
         $text = $line;
     }
-    
+
     return $text;
 }
 
@@ -162,21 +196,21 @@ function lks_object_to_array($object)
     if ($object) {
         return json_decode(json_encode($object), true);
     }
-    
+
     return [];
 }
 
 function lks_str_slug($text)
 {
     $text = str_replace('\\', '-', $text);
-    
+
     $text = strip_tags($text); // Strip html & php tag
     $text = lks_str_utf82ascii($text); // Convert utf8 to similar ascii character
     $text = strtolower($text); // Change uppercase to lowercase
     $text = preg_replace('/[^a-z0-9\-_\/]/u', '-', $text); // Replace unexpected character and full trim "-" characters
     $text = preg_replace('/(?:(?:^|\n)-+|-+(?:$|\n))/u', '', $text);
     $text = preg_replace('/-+/u', '-', $text);
-    
+
     return $text;
 }
 
@@ -196,7 +230,7 @@ function lks_str_utf82ascii($text)
     $text = preg_replace('/[ÝỲỶỸỴ]/u', 'Y', $text);
     $text = preg_replace('/[đ]/u', 'd', $text);
     $text = preg_replace('/[Đ]/u', 'D', $text);
-    
+
     return $text;
 }
 
@@ -211,7 +245,7 @@ function lks_table($variable)
     $colgroups = isset($variable['colgroups']) ? $variable['colgroups'] : [];
     // $sticky = isset($variable['sticky']) ? $variable['sticky'] : false;
     $empty = isset($variable['empty']) ? $variable['empty'] : '';
-    
+
     // Add sticky headers, if applicable.
     /*
      * if (count($header) && $sticky) {
@@ -221,20 +255,20 @@ function lks_table($variable)
      * $attributes['class'] = 'sticky-enabled';
      * }
      */
-    
-    $attributes['class'] .= ! empty($attributes['class']) ? ' ' : '';
+
+    $attributes['class'] = ! empty($attributes['class']) ? $attributes['class'] . ' ' : '';
     $attributes['class'] .= 'table';
     $output = '<table' . HTML::attributes($attributes) . ">\n";
-    
+
     if (isset($caption)) {
         $output .= '<caption>' . $caption . "</caption>\n";
     }
-    
+
     // Format the table columns:
     if (count($colgroups)) {
         foreach ($colgroups as $number => $colgroup) {
             $attributes = [];
-            
+
             // Check if we're dealing with a simple or complex column
             if (isset($colgroup['data'])) {
                 foreach ($colgroup as $key => $value) {
@@ -247,7 +281,7 @@ function lks_table($variable)
             } else {
                 $cols = $colgroup;
             }
-            
+
             // Build colgroup
             if (is_array($cols) && count($cols)) {
                 $output .= ' <colgroup' . HTML::attributes($attributes) . '>';
@@ -261,7 +295,7 @@ function lks_table($variable)
             }
         }
     }
-    
+
     // Add the 'empty' row message if available.
     if (! count($rows) && $empty) {
         $header_count = 0;
@@ -283,7 +317,7 @@ function lks_table($variable)
             )
         );
     }
-    
+
     // Format the table header:
     if (count($header)) {
         // $ts = tablesort_init($header);
@@ -302,7 +336,7 @@ function lks_table($variable)
      * $ts = [];
      * }
      */
-    
+
     // Format the table rows:
     if (count($rows)) {
         $output .= "<tbody>\n";
@@ -316,7 +350,7 @@ function lks_table($variable)
             if (isset($row['data'])) {
                 $cells = $row['data'];
                 $no_striping = isset($row['no_striping']) ? $row['no_striping'] : FALSE;
-                
+
                 // Set the attributes array and exclude 'data' and 'no_striping'.
                 $attributes = $row;
                 unset($attributes['data']);
@@ -326,14 +360,14 @@ function lks_table($variable)
                 $attributes = [];
                 $no_striping = FALSE;
             }
-            
+
             if (count($cells)) {
                 // Add odd/even class
                 if (! $no_striping) {
                     $class = $flip[$class];
                     $attributes['class'] = $class;
                 }
-                
+
                 // Build row
                 // kd($attributes);
                 $output .= ' <tr' . HTML::attributes($attributes) . '>';
@@ -347,7 +381,7 @@ function lks_table($variable)
         }
         $output .= "</tbody>\n";
     }
-    
+
     $output .= "</table>\n";
     return $output;
 }
@@ -357,7 +391,7 @@ function lks_table($variable)
 function lks_table_cell($cell, $header = FALSE)
 {
     $attributes = '';
-    
+
     if (is_array($cell)) {
         $data = isset($cell['data']) ? $cell['data'] : '';
         $header |= isset($cell['header']);
@@ -367,13 +401,13 @@ function lks_table_cell($cell, $header = FALSE)
     } else {
         $data = $cell;
     }
-    
+
     if ($header) {
         $output = "<th$attributes>$data</th>";
     } else {
         $output = "<td$attributes>$data</td>";
     }
-    
+
     return $output;
 }
 
@@ -384,8 +418,8 @@ function lks_url($url, $parameters = [], $secure = null)
     $link->parameters = $parameters;
     $link->secure = $secure !== null ? $secure : config('lks.link_secure', false);
     event('lks.makeLink', $link);
-    
-    return url($link->url, $link->parameters, $link->secure); 
+
+    return url($link->url, $link->parameters, $link->secure);
 }
 
 function lks_validate_email($email)
@@ -409,7 +443,7 @@ function lks_view_paths()
         Output::path(),
         [config('lks.theme_engine', realpath(base_path('vendor/kalephan/lks/views')))]
     );
-    
+
     return array_unique($paths);
 }
 

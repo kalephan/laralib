@@ -2,5 +2,5 @@
 
 @section('content')
     {!!lks_table($table)!!}
-    {{$paginator}}
+    {!!$paginator!!}
 @endsection

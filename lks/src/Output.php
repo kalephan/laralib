@@ -73,14 +73,22 @@ class Output
 
     public function title()
     {
-        $this->data['title'][] = config('lks.sitename');
-
         $title = new \stdClass();
         $title->title = $this->data['title'];
-        event('lks.outputTitle', $title);
-        $this->data['title'] = $title->title;
+        $title->title[] = config('lks.sitename');
 
-        return view('pagetitle')->with('title', $this->data['title']);
+        event('lks.outputTitle', $title);
+
+        return implode('|', $title->title);
+    }
+
+    public function pagetitle()
+    {
+        $title = new \stdClass();
+        $title->title = $this->data['title'];
+        event('lks.outputPageTitle', $title);
+
+        return view('pagetitle')->with('title', $title->title);
     }
 
     public function titleAdd($title)
