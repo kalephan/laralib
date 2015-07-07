@@ -1,3 +1,4 @@
+
 <?php
 
 namespace Kalephan\LKS;
@@ -69,8 +70,8 @@ abstract class EntityAbstract
         $this->structure->actions = [
             'add' => ['url' => '@structure_url_prefix/add', 'title' => lks_lang('Thêm')],
             'view' => ['url' => '@structure_url_prefix/@id', 'title' => lks_lang('Xem')],
-            'edit' => ['url' => '@structure_url_prefix/@id/edit', 'title' => lks_lang('Sửa')],
-            'delete' => ['url' => '@structure_url_prefix/@id/delete', 'title' => lks_lang('Xóa')],
+            'edit' => ['url' => '@structure_url_prefix/edit/@id', 'title' => lks_lang('Sửa')],
+            'delete' => ['url' => '@structure_url_prefix/delete/@id', 'title' => lks_lang('Xóa')],
         ];
     }
 

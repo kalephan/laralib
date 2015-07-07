@@ -22,4 +22,9 @@ trait EntityControllerTrait {
 
         return view('page-entity-list', $entities);
     }
+
+    public function getAdd()
+    {
+        # code...
+    }
 }
