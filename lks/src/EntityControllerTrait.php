@@ -9,14 +9,17 @@ trait EntityControllerTrait {
 
     public function getIndex()
     {
-        Output::titleAdd($this->pagetitle['index']);
-
-        $data = [];
-        if ($entities = $this->entity->loadEntityPaginate()) {
-            $data['table'] = lks_entities2table($entities['entities'], $this->entity->structure());
-            $data['paginator'] = $entities['paginator']->render();
+        if (!empty($this->pagetitle['index'])) {
+            Output::titleAdd($this->pagetitle['index']);
         }
 
-        return view('page-entity-list', $data);
+        $entities = [
+            'entities' => [],
+            'paginator' => '',
+            'structure' => $this->entity->structure(),
+        ];
+        $entities = array_merge($entities, $this->entity->loadEntityPaginate());
+
+        return view('page-entity-list', $entities);
     }
 }

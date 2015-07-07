@@ -107,15 +107,7 @@ function lks_entities2table($entities, $structure, $cols = [])
         if (count($structure->actions)) {
             $links = '';
             foreach ($structure->actions as $key => $value) {
-                $trans_key = [
-                    '@structure_url_prefix',
-                    '@id',
-                ];
-                $trans_value = [
-                    $structure->url_prefix,
-                    $entity->{$structure->id},
-                ];
-                $value['url'] = str_replace($trans_key, $trans_value, $value['url']);
+                $value['url'] = lks_entity_token_trans($value['url'], $entity, $structure);
                 $links .= '<a href=" ' . lks_url($value['url']) . ' " clas="actions_link actions_'.$key.'">' . $value['title'] . '</a> ';
             }
             $row[] = $links;
@@ -125,6 +117,22 @@ function lks_entities2table($entities, $structure, $cols = [])
     }
 
     return $data;
+}
+
+function lks_entity_token_trans($string, $entity = null, $structure = null) {
+    $trans_key = $trans_value = '';
+
+    if ($structure) {
+        $trans_key[] = '@structure_url_prefix';
+        $trans_value[] = $structure->url_prefix;
+    }
+
+    if ($entity) {
+        $trans_key[] = '@id';
+        $trans_value[] = $entity->{$structure->id};
+    }
+
+    return str_replace($trans_key, $trans_value, $string);
 }
 
 function lks_form_close()

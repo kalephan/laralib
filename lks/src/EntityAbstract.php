@@ -2,6 +2,7 @@
 
 namespace Kalephan\LKS;
 
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -66,6 +67,7 @@ abstract class EntityAbstract
         $this->structure->order_by = ['id' => 'desc'];
         $this->structure->url_prefix = '';
         $this->structure->actions = [
+            'add' => ['url' => '@structure_url_prefix/add', 'title' => lks_lang('Thêm')],
             'view' => ['url' => '@structure_url_prefix/@id', 'title' => lks_lang('Xem')],
             'edit' => ['url' => '@structure_url_prefix/@id/edit', 'title' => lks_lang('Sửa')],
             'delete' => ['url' => '@structure_url_prefix/@id/delete', 'title' => lks_lang('Xóa')],
@@ -305,54 +307,6 @@ abstract class EntityAbstract
         return $entities;
     }
 
-    /*
-     * public function loadEntityAll($attr = []) {
-     * // Get from cache
-     * if (!isset($attr['cache']) || $attr['cache']) {
-     * $cache_name = lks_cache_name(__METHOD__) . '-' . $this->structure->class . '-' . serialize($attr);
-     *
-     * if ($cache_content = Cache::get($cache_name)) {
-     * return $cache_content;
-     * }
-     * }
-     *
-     * // Get from database
-     * $entity = $this->model->loadEntityAll($this->structure, $attr);
-     *
-     * // Set to cache
-     * if (!isset($attr['cache']) || $attr['cache']) {
-     * lks_cache_set($cache_name, $entity);
-     * }
-     *
-     * return $entity;
-     * }
-     */
-
-    /*
-     * public function loadEntityWhere($attr = []) {
-     * // Get from cache
-     * if (!isset($attr['cache']) || $attr['cache']) {
-     * $cache_name = lks_cache_name(__METHOD__) . '-' . $this->structure->class . '-' . serialize($attr);
-     *
-     * if ($cache_content = Cache::get($cache_name)) {
-     * return $cache_content;
-     * }
-     * }
-     *
-     * // Get from database
-     * $entity = $this->model->loadEntity($this->structure, $attr);
-     * if ($entity) {
-     * $entity = $this->buildEntity($entity, $attr);
-     * }
-     *
-     * // Set to cache
-     * if (!isset($attr['cache']) || $attr['cache']) {
-     * lks_cache_set($cache_name, $entity);
-     * }
-     *
-     * return $entity;
-     * }
-     */
     public function deleteEntity($entity_ids)
     {
         $entity_ids = (array) $entity_ids;
