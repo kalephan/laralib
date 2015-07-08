@@ -83,8 +83,21 @@ function lks_entities2table($entities, $structure, $cols = [])
         }
     }
 
+    $action_col = 0;
     if (count($structure->actions)) {
         $data['header'][] = lks_lang('Hoạt động');
+
+        $actions = $structure->actions;
+
+        if (isset($actions['create'])) {
+            unset($actions['create']);
+        }
+
+        if (isset($actions['list'])) {
+            unset($actions['list']);
+        }
+
+        $action_col = count($actions);
     }
 
     foreach ($entities as $entity) {
@@ -104,10 +117,11 @@ function lks_entities2table($entities, $structure, $cols = [])
 
         }
 
-        if (count($structure->actions)) {
+        if ($action_col) {
             $links = '';
-            foreach ($structure->actions as $key => $value) {
+            foreach ($actions as $key => $value) {
                 $value['url'] = lks_entity_token_trans($value['url'], $entity, $structure);
+
                 $links .= '<a href=" ' . lks_url($value['url']) . ' " clas="actions_link actions_'.$key.'">' . $value['title'] . '</a> ';
             }
             $row[] = $links;

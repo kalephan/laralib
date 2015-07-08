@@ -1,9 +1,9 @@
 @extends('html')
 
 @section('content')
-    @if (!empty($structure->actions['add']))
+    @if (!empty($structure->actions['create']))
         <div class="btn-group" role="group" aria-label="...">
-            <a href="{{lks_url(lks_entity_token_trans($structure->actions['add']['url'], null, $structure))}}" class="btn btn-default">{{$structure->actions['add']['title']}}</a>
+            <a href="{{lks_url(lks_entity_token_trans($structure->actions['create']['url'], null, $structure))}}" class="btn btn-default">{{$structure->actions['create']['title']}}</a>
         </div>
     @endif
 
