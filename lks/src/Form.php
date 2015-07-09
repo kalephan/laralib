@@ -18,11 +18,15 @@ class Form
     public function build($class, $form_values = [])
     {
         $cache_name_prefix = lks_cache_name(__CLASS__ . '-build');
-        
-        $class = explode('@', $class);
-        $form_id = lks_str_slug($class[0] . '-' . $class[1]);
+
+        if (is_string($class)) {
+            $class = explode('@', $class);
+            $class[0] = new $class[0];
+        }
+
+        $form_id = lks_str_slug(get_class($class[0]) . '-' . $class[1]);
         $form_token = Input::get('_form_token', md5(time() . csrf_token() . Request::path()));
-        
+
         // Rebuild from error form
         $cache_name_error_form = "$cache_name_prefix-$form_id-$form_token";
         if ($cache_value = Cache::get($cache_name_error_form)) {
@@ -34,40 +38,37 @@ class Form
                 $form = $cache_value;
             } else {
                 $form = self::formInit($form_id);
-                call_user_func([
-                    new $class[0](),
-                    $class[1]
-                ], $form);
+                call_user_func([$class[0], $class[1]], $form);
                 event('lks.formAlter', $form);
                 event("lks.formAlter: $form_id", $form);
                 self::buildBeforeCache($form);
                 Cache::forever($cache_name, $form);
             }
-            
+
             if ($form_values) {
                 $form->values = lks_object_to_array($form_values);
             }
-            
+
             event("lks.formValueAlter", $form);
             event("lks.formValueAlter: $form_id", $form);
-            
+
             // Set default value for form
             self::setValues($form);
         }
-        
+
         $form->fields['_form_token']['#value'] = $form_token;
         self::buildAfterCache($form);
-        
+
         // Create cache to use when form submitted
         lks_cache_set($cache_name_error_form, $form, config('session.lifetime', 120));
-        
+
         return view($form->theme, ['form' => $form]);
     }
 
     private static function formInit($form_id)
     {
         $form = new \stdClass();
-        
+
         $form->connection = '';
         $form->error = [];
         $form->form = [];
@@ -79,14 +80,14 @@ class Form
         $form->validate = [];
         $form->values = [];
         $form->variable = [];
-        
+
         $form->actions = [];
         $form->actions['submit'] = [
             '#name' => 'submit',
             '#type' => 'submit',
             '#value' => lks_lang('Submit')
         ];
-        
+
         $form->fields = [];
         $form->fields['_form_id'] = [
             '#name' => '_form_id',
@@ -100,7 +101,7 @@ class Form
             '#value' => '',
             '#disabled' => true
         ];
-        
+
         return $form;
     }
 
@@ -111,7 +112,7 @@ class Form
                 $form->fields[$key]['#value'] = $value;
             }
         }
-        
+
         /*
          * foreach ($form->fields as $key => $value) {
          * switch ($key) {
@@ -199,33 +200,33 @@ class Form
         $index = 0;
         foreach ($fields as $key => $value) {
             $is_sort = true;
-            
+
             // Don't care with #validate, #submit...
             if (isset($value['#type'])) {
                 $fields[$key] = self::buildItem($value, $error);
                 if (isset($error[$key])) {
                     unset($error[$key]);
                 }
-                
+
                 // Use for sort
                 $weight = isset($value['#weight']) ? $value['#weight'] : 0;
             } else {
                 $is_sort = false;
                 unset($fields[$key]);
             }
-            
+
             // Use for sort
             if ($is_sort) {
                 $sort_weight[$key] = $weight;
                 $sort_index[$key] = $index;
                 $index ++;
             }
-            
+
             if (isset($value['#children'])) {
                 self::buildFields($value['#children'], $error);
             }
         }
-        
+
         // Sort by weight
         array_multisort($sort_weight, SORT_ASC, $sort_index, SORT_ASC, $fields);
     }
@@ -236,7 +237,7 @@ class Form
     private static function itemInit(&$item)
     {
         $item['#id'] = isset($item['#id']) ? $item['#id'] : 'fii_' . lks_str_slug($item['#name']); // fii = form item id
-        
+
         $item['#attributes'] = isset($item['#attributes']) ? $item['#attributes'] : [];
         $item['#attributes']['id'] = isset($item['#attributes']['id']) ? $item['#attributes']['id'] : $item['#id'] . '_field';
         $item['#attributes']['class'] = isset($item['#attributes']['class']) ? $item['#attributes']['class'] : '';
@@ -247,25 +248,25 @@ class Form
     public static function buildItem($item, &$error = [])
     {
         self::itemInit($item);
-        
+
         // Special field
         switch ($item['#type']) {
             case 'checkbox':
             case 'radio':
                 $item['#checked'] = isset($item['#checked']) ? $item['#checked'] : false;
                 break;
-            
+
             case 'select':
                 $item['#attributes']['class'] .= ' form-control';
                 $item['#options'] = isset($item['#options']) ? $item['#options'] : [];
                 break;
-            
+
             case 'radios':
             case 'checkboxes':
                 unset($item['#attributes']['id']);
                 $item['#options'] = isset($item['#options']) ? $item['#options'] : [];
                 break;
-            
+
             case 'textarea':
                 if (! empty($item['#rte_enable'])) {
                     $data = new \stdClass();
@@ -273,15 +274,15 @@ class Form
                     event('lks.RTEEnable', $data);
                     $item = $data->item;
                 }
-                
+
                 $item['#attributes']['class'] .= ' form-control';
                 break;
-            
+
             case 'date':
                 if (empty($item['#config']['form_type'])) {
                     $item['#config']['form_type'] = 'datepicker';
                 }
-                
+
                 switch ($item['#config']['form_type']) {
                     case 'select_group':
                         if (empty($item['#config']['group_format'])) {
@@ -289,30 +290,30 @@ class Form
                         }
                         break;
                 }
-                
+
                 break;
-            
+
             case 'submit':
                 $item['#attributes']['class'] .= ' btn btn-primary';
                 break;
-            
+
             case 'button':
             case 'reset':
                 $item['#attributes']['class'] .= ' btn btn-default';
                 break;
-            
+
             case 'file':
                 break;
-            
+
             default:
                 $item['#attributes']['class'] .= ' form-control';
         }
-        
+
         $data = new \stdClass();
         $data->item = $item;
         event('lks.formBuildItem: ' . $item['#type'], $data);
         $item = $data->item;
-        
+
         // Error
         /*
          * if (isset($error[$item['#name']])) {
@@ -330,7 +331,7 @@ class Form
          * $item['#class'] .= ' error';
          * }
          */
-        
+
         // Options callback
         if (! empty($item['#options_callback'])) {
             $options_callback = explode('@', $item['#options_callback']['class']);
@@ -340,7 +341,7 @@ class Form
                 $options_callback[1]
             ], $item['#options_callback']['arguments']);
         }
-        
+
         // AJAX
         if (isset($item['#ajax'])) {
             $js = array(
@@ -348,10 +349,10 @@ class Form
                     $item['#attributes']['id'] => $item['#ajax']
                 )
             );
-            
+
             Asset::jsAdd($js, 'settings');
         }
-        
+
         return $item;
     }
 
@@ -362,32 +363,32 @@ class Form
             $item = $form[$key];
             unset($form[$key]);
         }
-        
+
         if (count($item) && isset($item['#type'])) {
             if (isset($item['#theme'])) {
                 $template = $item['#theme'];
                 unset($item['#theme']);
             } else {
                 $template_collection = [];
-                
+
                 if (isset($form['#id'])) {
                     $template_collection[] = 'form_item-' . $item['#type'] . '-' . $item['#name'] . '-' . $form['#id'];
                 }
                 $template_collection[] = 'form_item-' . $item['#type'] . '-' . $item['#name'];
                 $template_collection[] = 'form_item-' . $item['#type'];
                 $template_collection[] = 'form_item';
-                
+
                 $template = array_shift($template_collection);
                 while (! View::exists($template) && count($template_collection)) {
                     $template = array_shift($template_collection);
                 }
             }
-            
+
             $item['#body'] = self::renderItem($item);
-            
+
             return view($template, ['element' => $item]);
         }
-        
+
         return '';
     }
 
@@ -399,42 +400,42 @@ class Form
                 if (! empty($value['#type'])) {
                     $result .= self::render($key, $fields);
                 }
-                
+
                 if (isset($value['#children'])) {
                     $result .= self::renderAll($value['#children']);
                 }
             }
         }
-        
+
         return $result;
     }
 
     public static function renderItem(&$element)
     {
         $result = '';
-        
+
         /*
          * if (!isset($element['#attributes'])) {
          * kd($element);
          * }
          */
-        
+
         switch ($element['#type']) {
             case 'markup':
                 $result = $element['#value'];
                 break;
-            
+
             case 'file':
             case 'password':
                 $result = LaravelForm::{$element['#type']}($element['#name'], $element['#attributes']);
                 break;
-            
+
             case 'button':
             case 'reset':
             case 'submit':
                 $result = LaravelForm::{$element['#type']}($element['#value'], $element['#attributes']);
                 break;
-            
+
             case 'checkboxes':
                 $checkboxes = '[]';
                 $form_type = 'checkbox';
@@ -446,36 +447,36 @@ class Form
                     $result .= '<label class="sublabel">' . $value . '</label>';
                 }
                 return $result;
-            
+
             case 'checkbox':
             case 'radio':
                 $result = LaravelForm::{$element['#type']}($element['#name'], $element['#value'], $element['#checked'], $element['#attributes']);
                 break;
-            
+
             case 'select':
                 $result = LaravelForm::{$element['#type']}($element['#name'], $element['#options'], $element['#value'], $element['#attributes']);
                 break;
-            
+
             case 'hidden':
                 $result = LaravelForm::{$element['#type']}($element['#name'], $element['#value'], $element['#attributes']);
-            
+
             case 'text':
             case 'textarea':
             case 'email':
             case 'hidden':
                 $result = LaravelForm::{$element['#type']}($element['#name'], $element['#value'], $element['#attributes']);
                 break;
-            
+
             default:
                 $data = new \stdClass();
                 $data->element = $element;
                 event('lks.formRenderItem: ' . $element['#type'], $data);
                 $element = $data->element;
-                
+
                 $result = LaravelForm::{$element['#type']}($element);
                 break;
         }
-        
+
         return $result;
     }
 
@@ -483,18 +484,18 @@ class Form
     {
         $form_id = Input::get('_form_id', false);
         $form_token = Input::get('_form_token', false);
-        
+
         // Restore $form_items from cache
         $cache_name = lks_cache_name(__CLASS__ . '-build') . "-$form_id-$form_token";
         $form = Cache::get($cache_name);
         Cache::forget($cache_name);
-        
+
         if (! count($form)) {
             return false;
         }
-        
+
         $form_values = Input::all();
-        
+
         // Validate this form
         $validate = true;
         if (! empty($form->validate)) {
@@ -512,11 +513,11 @@ class Form
                 }
             }
         }
-        
+
         if ($validate) {
             $validate = self::submitValidate($form, $form_values);
         }
-        
+
         // Submit action
         if ($validate) {
             if (! empty($form->submit)) {
@@ -532,11 +533,11 @@ class Form
                     ], $data);
                 }
             }
-            
+
             if ($form->message) {
                 Output::messageAdd($form->message, 'success');
             }
-            
+
             if ($form->redirect) {
                 return redirect($form->redirect);
             }
@@ -545,7 +546,7 @@ class Form
         else {
             lks_cache_set($cache_name, $form);
         }
-        
+
         /*
          * //Close modal after submit
          * if (isset($form['#success'])) {
@@ -559,7 +560,7 @@ class Form
          * return false;
          * }
          */
-        
+
         // Redirect after submit finalize
         /*
          * if ($redirect) {
@@ -580,7 +581,7 @@ class Form
          * }
          * }
          */
-        
+
         return redirect(Request::path());
     }
 
@@ -588,58 +589,58 @@ class Form
     {
         $rules = [];
         $validate = self::submitValidateFields($form->fields, $form_values, $rules);
-        
+
         if (count($rules)) {
             if ($form->connection) {
                 $verifier = App::make('validation.presence');
                 $verifier->setConnection($form->connection);
             }
-            
+
             $validator = Validator::make($rules['value'], $rules['rule']);
-            
+
             if ($form->connection) {
                 $validator->setPresenceVerifier($verifier);
             }
-            
+
             if ($validator->fails()) {
                 $form->error = array_merge($form->error, lks_object_to_array(json_decode($validator->messages())));
-                
+
                 return false;
             }
         }
-        
+
         return $validate;
     }
 
     private static function submitValidateFields(&$fields, &$form_values, &$rules)
     {
         $validate = true;
-        
+
         foreach ($fields as $key => $value) {
             if (! self::submitValidateField($key, $fields[$key], $form_values, $rules)) {
                 $validate = false;
             }
-            
+
             if (isset($value['#children'])) {
                 if (! self::submitValidateFields($fields[$key]['#children'], $form_values, $rules)) {
                     $validate = false;
                 }
             }
         }
-        
+
         return $validate;
     }
 
     private static function submitValidateField($key, &$field, &$form_values, &$rules)
     {
         $validate = true;
-        
+
         // Remove disabled fields were edited by client
         if (! empty($field['#disabled'])) {
             $form_values[$key] = $field['#value'];
         } else {
             $field['#value'] = isset($form_values[$key]) ? $form_values[$key] : (isset($field['#value']) ? $field['#value'] : (isset($field['#default']) ? $field['#default'] : ''));
-            
+
             if (isset($field['#type'])) {
                 $event = new \stdClass();
                 $event->field = $field;
@@ -648,15 +649,15 @@ class Form
                 $field = $event->field;
                 $validate = $event->validate;
             }
-            
+
             $form_values[$key] = $field['#value'];
-            
+
             if (isset($field['#validate'])) {
                 $rules['value'][$key] = $form_values[$key];
                 $rules['rule'][$key] = $field['#validate'];
             }
         }
-        
+
         return $validate;
     }
 }

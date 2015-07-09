@@ -1,6 +1,7 @@
 <?php
 namespace Kalephan\LKS;
 
+use Kalephan\LKS\Facades\Form;
 use Kalephan\LKS\Facades\Output;
 
 trait EntityControllerTrait {
@@ -10,16 +11,30 @@ trait EntityControllerTrait {
 
     public function getCreate()
     {
-        return 'getCreate';
+        if (!empty($this->pagetitle['create'])) {
+            Output::titleAdd($this->pagetitle['create']);
+        }
+
+        return lks_view('page', [
+            'content' => Form::build([$this->entity, 'formCreate'])
+        ]);
     }
 
     public function postCreate()
     {
-        return 'postCreate';
+        return Form::submit();
     }
 
-    public function getIndex($id)
+    public function getIndex($id = null)
     {
+        // List
+        if (empty($id)) {
+            return $this->getList();
+        }
+
+        // Read
+
+
         return 'getIndex';
     }
 
@@ -30,7 +45,7 @@ trait EntityControllerTrait {
 
     public function postUpdate($id)
     {
-        return 'postUpdate';
+        return Form::submit();
     }
 
     public function getDelete($id)
@@ -40,7 +55,7 @@ trait EntityControllerTrait {
 
     public function postDelete($id)
     {
-        return 'postDelete';
+        return Form::submit();
     }
 
     public function getList()
