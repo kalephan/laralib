@@ -134,16 +134,28 @@ function lks_entities2table($entities, $structure, $cols = [])
 }
 
 function lks_entity_token_trans($string, $entity = null, $structure = null) {
-    $trans_key = $trans_value = '';
+    $trans_key = $trans_value = [];
 
     if ($structure) {
-        $trans_key[] = '@structure_url_prefix';
+        $trans_key[] = '@structure-url_prefix';
         $trans_value[] = $structure->url_prefix;
+
+        $trans_key[] = '@structure-title';
+        $trans_value[] = $structure->title;
     }
 
     if ($entity) {
         $trans_key[] = '@id';
         $trans_value[] = $entity->{$structure->id};
+    }
+
+    if ($structure && $entity) {
+        foreach ($structure->fields as $key => $value) {
+            if ($key != $structure->id) {
+                $trans_key[] = "@$key";
+                $trans_value[] = $value;
+            }
+        }
     }
 
     return str_replace($trans_key, $trans_value, $string);

@@ -65,11 +65,11 @@ abstract class EntityAbstract
         $this->structure->url_prefix = '';
         // CRUDL = create, read, update, delete and list
         $this->structure->actions = [
-            'create' => ['url' => '@structure_url_prefix/create', 'title' => lks_lang('Thêm')],
-            'read' => ['url' => '@structure_url_prefix/@id', 'title' => lks_lang('Xem')],
-            'update' => ['url' => '@structure_url_prefix/update/@id', 'title' => lks_lang('Cập nhật')],
-            'delete' => ['url' => '@structure_url_prefix/delete/@id', 'title' => lks_lang('Xóa')],
-            'list' => ['url' => '@structure_url_prefix', 'title' => lks_lang('Danh sách')],
+            'create' => ['url' => '@structure-url_prefix/create', 'title' => lks_lang('Thêm')],
+            'read' => ['url' => '@structure-url_prefix/@id', 'title' => lks_lang('Xem')],
+            'update' => ['url' => '@structure-url_prefix/update/@id', 'title' => lks_lang('Cập nhật')],
+            'delete' => ['url' => '@structure-url_prefix/delete/@id', 'title' => lks_lang('Xóa')],
+            'list' => ['url' => '@structure-url_prefix', 'title' => lks_lang('Danh sách')],
         ];
     }
 

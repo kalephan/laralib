@@ -1,4 +1,4 @@
 <?php
 return [
-    'enabled' => true,
+    'enabled' => env('DEVEL_ENABLED', true),
 ];
