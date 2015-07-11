@@ -459,8 +459,7 @@ function lks_view_paths()
     $paths = array_merge(
         config('view.paths', []),
         [
-            config('lks.theme_default', realpath(base_path('vendor/kalephan/lks/views'))),
-            config('lks.theme_backend', realpath(base_path('vendor/kalephan/lks/views')))
+            config('lks.theme_default', realpath(base_path('vendor/kalephan/lks/views')))
         ],
         Output::path(),
         [config('lks.theme_engine', realpath(base_path('vendor/kalephan/lks/views')))]

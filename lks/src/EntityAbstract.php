@@ -219,6 +219,19 @@ abstract class EntityAbstract
         }
     }
 
+    public function searchEntity($column, $key, $limit = 0, $offset = 0)
+    {
+        $model = $this->model->select($this->structure->id);
+        $model->where($column, 'LIKE', "%$key%");
+
+        if ($limit >= 0) {
+            $limit = $limit ? $limit : config('lks.items_per_page');
+            $model->take($limit)->skip($offset);
+        }
+
+        return $this->_loadEntityAll($model->get());
+    }
+
     public function loadEntity($entity_id, $check_active = false)
     {
         $entity_id = $this->convertEntityId($entity_id);
@@ -383,7 +396,7 @@ abstract class EntityAbstract
             '#disabled' => true
         );
 
-        $form->fields += $fields;
+        $form->fields = array_merge($form->fields, $fields);
         $form->actions['submit']['#value'] = lks_lang('Lưu');
         $form->submit[] = get_called_class() . '@formCreateUpdateSubmit';
     }
