@@ -9,6 +9,17 @@ trait EntityControllerTrait {
     protected $entity;
     protected $pagetitle;
 
+    public function getIndex($id = null)
+    {
+        // List
+        if (empty($id)) {
+            return $this->getList();
+        }
+
+        // Read
+        return $this->getRead($id);
+    }
+
     public function getCreate()
     {
         if (!empty($this->pagetitle['create'])) {
@@ -25,17 +36,9 @@ trait EntityControllerTrait {
         return Form::submit();
     }
 
-    public function getIndex($id = null)
+    public function getRead($id)
     {
-        // List
-        if (empty($id)) {
-            return $this->getList();
-        }
-
-        // Read
-
-
-        return 'getIndex';
+        return 'getRead';
     }
 
     public function getUpdate($id)
