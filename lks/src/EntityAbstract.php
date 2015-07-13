@@ -222,7 +222,18 @@ abstract class EntityAbstract
     public function searchEntity($column, $key, $limit = 0, $offset = 0)
     {
         $model = $this->model->select($this->structure->id);
-        $model->where($column, 'LIKE', "%$key%");
+
+        $column = is_array($column) ? $column : [$column];
+        $i = 0;
+        foreach ($column as $value) {
+            if ($i) {
+                $model->orWhere($value, 'LIKE', "%$key%");
+            }
+            else {
+                $model->where($value, 'LIKE', "%$key%");
+                $i++;
+            }
+        }
 
         if ($limit >= 0) {
             $limit = $limit ? $limit : config('lks.items_per_page');
