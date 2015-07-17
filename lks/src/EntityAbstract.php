@@ -418,6 +418,10 @@ abstract class EntityAbstract
         $form->fields = array_merge($form->fields, $fields);
         $form->actions['submit']['#value'] = lks_lang('Lưu');
         $form->submit[] = get_called_class() . '@formCreateUpdateSubmit';
+
+        if (isset($this->structure->actions['list'])) {
+            $form->redirect = lks_entity_token_trans($this->structure->actions['list']['url'], null, $this->structure);
+        }
     }
 
     public function formCreateUpdateSubmit($form, &$form_values)
