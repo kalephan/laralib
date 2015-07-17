@@ -151,7 +151,7 @@ function lks_entity_token_trans($string, $entity = null, $structure = null) {
 
     if ($structure && $entity) {
         foreach ($structure->fields as $key => $value) {
-            if ($key != $structure->id) {
+            if ($key != $structure->id && (is_string($value) || is_numeric($value))) {
                 $trans_key[] = "@$key";
                 $trans_value[] = $value;
             }

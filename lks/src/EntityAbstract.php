@@ -107,7 +107,7 @@ abstract class EntityAbstract
         event('lks.entitySaveEntity', $entity);
         event('lks.entitySaveEntity: ' . $this->structure->class, $entity);
 
-        return $entity->{$this->structure->id};
+        return $entity;
     }
 
     private function saveEntityBuildData($entity, $entity_new)
@@ -277,15 +277,23 @@ abstract class EntityAbstract
 
     public function loadEntityWhere($where)
     {
-        $model = $this->model->select($this->structure->id);
+        $cache_name = lks_cache_name(__METHOD__) .  str_replace(['@id', '@entity'], [serialize($where), $this->structure->class], $this->cache_name);
+        $cache = Cache::get($cache_name);
 
-        foreach ($where as $value) {
-            if (count($value) == 3) {
-                $model = $model->where($value[0], $value[1], $value[2]);
+        if (!$cache) {
+            $model = $this->model->select($this->structure->id);
+
+            foreach ($where as $value) {
+                if (count($value) == 3) {
+                    $model = $model->where($value[0], $value[1], $value[2]);
+                }
             }
+
+            $cache = $this->_loadEntityAll($model->get());
+            lks_cache_set($cache_name, $cache);
         }
 
-        return $this->_loadEntityAll($model->get());
+        return $cache;
     }
 
     public function loadEntityPaginate($items_per_page = null)
