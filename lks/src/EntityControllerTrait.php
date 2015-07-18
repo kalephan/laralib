@@ -43,7 +43,18 @@ trait EntityControllerTrait {
 
     public function getUpdate($id)
     {
-        return 'getUpdate';
+        $entity = $this->entity->loadEntity($id);
+        if (!$entity) {
+            abort(404);
+        }
+
+        if (!empty($this->pagetitle['update'])) {
+            Output::titleAdd($this->pagetitle['update']);
+        }
+
+        return lks_view('page', [
+            'content' => Form::build([$this->entity, 'formUpdate'], $entity)
+        ]);
     }
 
     public function postUpdate($id)

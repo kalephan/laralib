@@ -63,6 +63,11 @@ function lks_cache_set($cache, $value, $expired = null)
     return Cache::put($cache, $value, $expired);
 }
 
+function lks_date2db($date)
+{
+    return date('Y-m-d H:i:s', $date);
+}
+
 function lks_entities2table($entities, $structure, $cols = [])
 {
     $data = [
