@@ -60,7 +60,7 @@ class Form
         self::buildAfterCache($form);
 
         // Create cache to use when form submitted
-        lks_cache_set($cache_name_error_form, $form, config('session.lifetime', 120));
+        lks_cache_set($cache_name_error_form, $form, config('lks.form_lifetime', 120));
 
         return view($form->theme, ['form' => $form]);
     }
@@ -107,8 +107,8 @@ class Form
 
     private static function setValues($form)
     {
-        foreach ($form->fields as $key => $value) {
-            if (isset($form->values[$key])) {
+        foreach ($form->values as $key => $value) {
+            if (isset($form->fields[$key])) {
                 $form->fields[$key]['#value'] = $value;
             }
         }

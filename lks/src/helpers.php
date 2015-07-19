@@ -58,7 +58,7 @@ function lks_cache_name($name)
 
 function lks_cache_set($cache, $value, $expired = null)
 {
-    $expired = $expired ? $expired : Carbon::now()->addMinutes(config('lks.cache_ttl', 10));
+    $expired = $expired ? $expired : Carbon::now()->addMinutes(config('lks.cache_lifetime', 10));
 
     return Cache::put($cache, $value, $expired);
 }
