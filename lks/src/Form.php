@@ -242,7 +242,7 @@ class Form
         $item['#attributes']['id'] = isset($item['#attributes']['id']) ? $item['#attributes']['id'] : $item['#id'] . '_field';
         $item['#attributes']['class'] = isset($item['#attributes']['class']) ? $item['#attributes']['class'] : '';
         $item['#class'] = 'form_item form_item_' . $item['#type'] . ' form_item_' . lks_str_slug($item['#name']) . (isset($item['#class']) ? ' ' . $item['#class'] : '');
-        $item['#value'] = isset($item['#value']) ? $item['#value'] : '';
+        $item['#value'] = isset($item['#value']) ? $item['#value'] : null;
     }
 
     public static function buildItem($item, &$error = [])
@@ -450,7 +450,8 @@ class Form
 
             case 'checkbox':
             case 'radio':
-                $result = LaravelForm::{$element['#type']}($element['#name'], $element['#value'], $element['#checked'], $element['#attributes']);
+                $checked = $element['#value'] == null ? $element['#checked'] : ($element['#setting_value'] == $element['#value'] ? true : false);
+                $result = LaravelForm::{$element['#type']}($element['#name'], $element['#setting_value'], $checked, $element['#attributes']);
                 break;
 
             case 'select':

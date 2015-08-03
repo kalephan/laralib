@@ -241,33 +241,30 @@ abstract class EntityAbstract
         return $this->_loadEntityAll($model->get());
     }
 
-    public function loadEntity($entity_id, $check_active = false)
+    public function loadEntity($entity_id, $check_active = false, $load_reference = true)
     {
         $entity_id = $this->convertEntityId($entity_id);
 
         $cache_name = str_replace(['@id', '@entity'], [$entity_id, $this->structure->class], $this->cache_name);
-        if ($cache = Cache::get($cache_name)) {
-            if (! $check_active) {
-                return $cache;
-            } elseif (! isset($this->structure->fields['active']) || $cache->active == 1) {
-                return $cache;
-            } else {
-                return null;
+        if (!$entity = Cache::get($cache_name, null)) {
+            if ($entity = $this->model->find($entity_id)) {
+                event('lks.entityLoadEntity', $entity);
+                event('lks.entityLoadEntity: ' . $this->structure->class, $entity);
+
+                Cache::forever($cache_name, $entity);
             }
         }
+        elseif ($check_active && isset($this->structure->fields['active']) && $entity->active != 1) {
+            return null;
+        }
 
-        if ($entity = $this->model->find($entity_id)) {
+        if ($load_reference) {
             foreach ($this->structure->fields as $key => $field) {
                 if (isset($field['#reference']) && $entity->$key) {
                     $reference = new $field['#reference']['class'];
                     $entity->$key = $reference->loadEntity($entity->$key);
                 }
             }
-
-            event('lks.entityLoadEntity', $entity);
-            event('lks.entityLoadEntity: ' . $this->structure->class, $entity);
-
-            Cache::forever($cache_name, $entity);
         }
 
         return $entity;

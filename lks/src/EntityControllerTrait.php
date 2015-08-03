@@ -26,7 +26,7 @@ trait EntityControllerTrait {
             Output::titleAdd($this->pagetitle['create']);
         }
 
-        return lks_view('page', [
+        return lks_view($this->_getView('page'), [
             'content' => Form::build([$this->entity, 'formCreate'])
         ]);
     }
@@ -43,7 +43,7 @@ trait EntityControllerTrait {
 
     public function getUpdate($id)
     {
-        $entity = $this->entity->loadEntity($id);
+        $entity = $this->entity->loadEntity($id, false, false);
         if (!$entity) {
             abort(404);
         }
@@ -52,7 +52,7 @@ trait EntityControllerTrait {
             Output::titleAdd($this->pagetitle['update']);
         }
 
-        return lks_view('page', [
+        return lks_view($this->_getView('page'), [
             'content' => Form::build([$this->entity, 'formUpdate'], $entity)
         ]);
     }
@@ -85,6 +85,23 @@ trait EntityControllerTrait {
         ];
         $entities = array_merge($entities, $this->entity->loadEntityPaginate());
 
-        return view('page-entity-list', $entities);
+        return view($this->_getView('page-entity-list'), $entities);
+    }
+
+    protected function _getView($page)
+    {
+        $pages = [
+            $page . '-' . str_slug(str_replace('\\', '-', $this->entity->structure()->class)),
+            $page,
+        ];
+
+        foreach ($pages as $page) {
+            if (view()->exists($page))
+            {
+                return $page;
+            }
+        }
+
+        return;
     }
 }

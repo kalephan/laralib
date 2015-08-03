@@ -56,15 +56,15 @@ class LKSServiceProvider extends ServiceProvider
             return new Form();
         });
 
-        // Register Illuminate\Html
-        $this->app->register('Illuminate\Html\HtmlServiceProvider');
+        // Register Collective\Html\HtmlServiceProvider
+        $this->app->register('Collective\Html\HtmlServiceProvider');
 
         // ALIAS
         $this->app->booting(function () {
             $loader = AliasLoader::getInstance();
 
-            $loader->alias('HTML', 'Illuminate\Html\HtmlFacade');
-            $loader->alias('FormLaravel', 'Illuminate\Html\FormFacade');
+            $loader->alias('HTML', 'Collective\Html\HtmlFacade');
+            $loader->alias('FormLaravel', 'Collective\Html\FormFacade');
 
             $loader->alias('Output', 'Kalephan\LKS\Facades\Output');
             $loader->alias('Asset', 'Kalephan\LKS\Facades\Asset');
