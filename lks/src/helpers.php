@@ -2,8 +2,8 @@
 use Carbon\Carbon;
 use Kalephan\LKS\Facades\Form;
 use Kalephan\LKS\Facades\Output;
-use Illuminate\Html\HtmlFacade as HTML;
-use Illuminate\Html\FormFacade as LaravelForm;
+use Collective\Html\HtmlFacade as HTML;
+use Collective\Html\FormFacade as LaravelForm;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\URL;
@@ -107,6 +107,7 @@ function lks_entities2table($entities, $structure, $cols = [])
 
     foreach ($entities as $entity) {
         $row = [];
+        $display = [];
         foreach ($fields as $key => $field) {
             if (isset($field['#reference'])) {
                 if (!empty($entity->$key)) {
@@ -117,7 +118,20 @@ function lks_entities2table($entities, $structure, $cols = [])
                 }
             }
             else {
-                $row[] = $entity->$key;
+                if (!empty($field['#display'])) {
+                    if (!isset($display[$key])) {
+                        $func = explode('@', $field['#display']);
+                        $display[$key] = [
+                            'object' => new $func[0],
+                            'method' => $func[1],
+                        ];
+                    }
+                    //kd($display);
+                    $row[] = $display[$key]['object']->{$display[$key]['method']}($entity->$key, $entity);
+                }
+                else {
+                    $row[] = $entity->$key;
+                }
             }
 
         }

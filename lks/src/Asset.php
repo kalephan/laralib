@@ -8,7 +8,7 @@ use Assetic\Asset\AssetCollection;
 use Assetic\Asset\FileAsset;
 use Assetic\Filter\CssMinFilter;
 use Assetic\Filter\JSMinFilter;
-use Illuminate\Html\HtmlFacade as HTML;
+use Collective\Html\HtmlFacade as HTML;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Route;
 
@@ -57,15 +57,15 @@ class Asset
         if ($this->theme) {
             return;
         }
-        
+
         $config = config('lks.theme_default') . '/config.php';
-        
+
         if (! file_exists($config)) {
             throw new \Exception('config.php file is not exists on theme folder.');
         }
-        
+
         $config = require $config;
-        
+
         try {
             $this->theme = $config['name'];
             $this->css['config'] = $config['css'];
@@ -80,7 +80,7 @@ class Asset
         if (is_string($data)) {
             $data = (array) $data;
         }
-        
+
         $this->{$asset}[$type] = lks_array_merge_deep($this->{$asset}[$type], $data);
     }
 
@@ -89,15 +89,15 @@ class Asset
         if (empty($asset_files)) {
             return '';
         }
-        
+
         // Compress asset files
         $result = [];
         if (config("lks.asset_compress_$type", false)) {
             $asset_group = $this->_assetGroup($asset_files);
-            
+
             foreach ($asset_group as $key => $value) {
                 $key = explode('|', $key);
-                
+
                 if ((! isset($key[1]) || $key[1] != 'no-compress')) {
                     $file_name = '_z' . md5(mt_rand() . microtime()) . ".$type";
                     $this->_assetCompress($file_name, $key[0], $value, $type);
@@ -105,12 +105,12 @@ class Asset
                 } else {
                     $file_name = reset($value);
                 }
-                
+
                 switch ($type) {
                     case 'css':
                         $result[] = '<link href="' . $file_name . '" rel="stylesheet">';
                         break;
-                    
+
                     case 'js':
                         $result[] = '<script type="text/javascript" src="' . $file_name . '"></script>';
                         break;
@@ -126,35 +126,35 @@ class Asset
                                 'href' => $value
                             ];
                         }
-            
+
                         if (! is_array($value)) {
                             throw new \Exception('Theme css config is invalid format.');
                         }
-            
+
                         $value['rel'] = 'stylesheet';
-            
+
                         $result[] = '<link' . HTML::attributes($value) . '>';
                         break;
-            
+
                     case 'js':
                         if (is_string($value)) {
                             $value = [
                                 'src' => $value
                             ];
                         }
-            
+
                         if (! is_array($value)) {
                             throw new \Exception('Theme js config is invalid format.');
                         }
-            
+
                         $value['type'] = 'text/javascript';
-            
+
                         $result[] = '<script' . HTML::attributes($value) . '></script>';
                         break;
                 }
             }
         }
-        
+
         return implode('', $result);
     }
 
@@ -171,7 +171,7 @@ class Asset
                 Cache::forever($cache_name, $css_config);
             }
         }
-        
+
         // Get CSS was added by Asset::cssAdd() funtion
         $css_custom = '';
         if ($this->css['custom']) {
@@ -183,7 +183,7 @@ class Asset
                 Cache::forever($cache_name, $css_custom);
             }
         }
-        
+
         return $css_config . $css_custom;
     }
 
@@ -198,12 +198,12 @@ class Asset
             $js_first = $this->_jsBuildFirst();
             Cache::forever($cache_name, $js_first);
         }
-        
+
         $js_settings = '';
         if ($this->js['settings']) {
             $js_settings = $this->_jsBuildSetting();
         }
-        
+
         // Get JS in config file
         $js_config = '';
         if ($this->js['config']) {
@@ -215,7 +215,7 @@ class Asset
                 Cache::forever($cache_name, $js_config);
             }
         }
-        
+
         // Get JS was added by Asset::jsAdd() funtion
         $js_custom = '';
         if ($this->js['custom']) {
@@ -227,12 +227,12 @@ class Asset
                 Cache::forever($cache_name, $js_custom);
             }
         }
-        
+
         $js_inline = '';
         if ($this->js['inline']) {
             $js_inline = '<script type="text/javascript">' . implode('', $value) . '</script>';
         }
-        
+
         return $js_first . $js_settings . $js_config . $js_custom . $js_inline;
     }
 
@@ -244,45 +244,45 @@ class Asset
     private function _jsBuildFirst($remove_only = false)
     {
         $result = '';
-        
+
         if (isset($this->js['config']['jquery'])) {
             if (! $remove_only) {
                 $result .= $this->_assetBuild([
                     $this->js['config']['jquery']
                 ], 'js');
             }
-            
+
             unset($this->js['config']['jquery']);
         }
-        
+
         if (isset($this->js['config']['lks'])) {
             if (! $remove_only) {
                 $result .= $this->_assetBuild([
                     $this->js['config']['lks']
                 ], 'js');
             }
-            
+
             unset($this->js['config']['lks']);
         }
-        
+
         return $result;
     }
-    
-    
+
+
       private function _assetGroup($files)
     {
         $assets = [];
         foreach ($files as $key => $value) {
             $key = explode('|', $key);
-            
+
             if (substr($value, 0, 2) == '//' || substr($value, 0, 7) == 'http://' || substr($value, 0, 8) == 'https://') {
                 $key[1] = 'no-compress';
             }
             $key[1] = isset($key[1]) ? $key[1] : '';
-            
+
             $assets[substr($value, 0, strrpos($value, '/')) . '|' . $key[1]][] = $value;
         }
-        
+
         return $assets;
     }
 
@@ -292,14 +292,14 @@ class Asset
         foreach ($asset_files as $value) {
             $files[] = new FileAsset(public_path() . $value);
         }
-        
+
         switch ($type) {
             case 'js':
                 $assets = new AssetCollection($files, array(
                     new JSMinFilter()
                 ));
                 break;
-            
+
             case 'css':
                 $assets = new AssetCollection($files, array(
                     new CssMinFilter()
@@ -307,10 +307,10 @@ class Asset
                 break;
         }
         $assets->setTargetPath($file_name);
-        
+
         $am = new AssetManager();
         $am->set('assets', $assets);
-        
+
         $writer = new AssetWriter(public_path() . $file_path);
         $writer->writeManagerAssets($am);
     }

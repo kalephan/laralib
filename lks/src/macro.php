@@ -1,7 +1,7 @@
 <?php
-use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\URL;
-use Illuminate\Html\HtmlFacade as HTML;
+//use Illuminate\Support\Facades\Request;
+//use Illuminate\Support\Facades\URL;
+//use Illuminate\Html\HtmlFacade as HTML;
 
 /*
  * @see: http://laravel-tricks.com/tricks/navigation-menus-using-unordered-lists
@@ -29,7 +29,7 @@ use Illuminate\Html\HtmlFacade as HTML;
  */
 HTML::macro('nav', function ($list, $attributes = null) {
     $nav = [];
-    
+
     // iterate through each element of the array and get url => link pairs
     foreach ($list as $url => $val) {
         // Sometimes we want to pass a condition and display link based on the condition
@@ -42,12 +42,12 @@ HTML::macro('nav', function ($list, $attributes = null) {
                 'true' => isset($val['url']) ? $val['url'] : '',
                 'false' => isset($val['url_false']) ? $val['url_false'] : ''
             ];
-            
+
             // check to see if condition passes
             $url = $condition ? $link['true'] : $link['false'];
             $val = isset($val['title']) ? $val['title'] : $url;
         }
-        
+
         // Check to see if both url and link is passed
         // Many times, both url and link name will be the same, so we can avoid typing it twice
         // and just pass one value
@@ -57,26 +57,26 @@ HTML::macro('nav', function ($list, $attributes = null) {
             case '<none>':
                 $url = '';
                 break;
-            
+
             case '<front>':
                 $url = '/';
                 break;
-            
+
             default:
                 $url = is_numeric($url) ? $val : $url;
         }
-        
+
         // If we are using controller routing (ex: HomeController@getIndex),
         // then we need to use URL::action() instead of URL::to()
         $url = $url ? ((strpos($url, '@') !== false) ? URL::action($url) : URL::to(strtolower($url))) : '';
-        
+
         // Set the active state automatically
         $class['class'] = (Request::url() === $url) ? 'active' : null;
-        
+
         // Push the new list into the $nav array
         array_push($nav, $url ? HTML::link($url, $val, $class) : $val);
     }
-    
+
     // Generate the unordered list
     // HTML::ul() performs htmlentities on the list by default,
     // so we have to decode it back using HTML::decode()

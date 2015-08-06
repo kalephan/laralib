@@ -4,7 +4,7 @@ namespace Kalephan\LKS;
 
 use Kalephan\LKS\Facades\Asset;
 use Kalephan\LKS\Facades\Output;
-use Illuminate\Html\FormFacade as LaravelForm;
+use Collective\Html\FormFacade as LaravelForm;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Input;
