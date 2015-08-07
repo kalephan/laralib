@@ -260,7 +260,7 @@ abstract class EntityAbstract
 
         if ($load_reference) {
             foreach ($this->structure->fields as $key => $field) {
-                if (isset($field['#reference']) && $entity->$key) {
+                if (isset($field['#reference']) && !empty($entity->$key)) {
                     $reference = new $field['#reference']['class'];
                     $entity->$key = $reference->loadEntity($entity->$key);
                 }
